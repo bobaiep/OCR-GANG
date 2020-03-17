@@ -3,6 +3,7 @@
 #include "SDL/SDL_image.h"
 #include "source/sdl/our_sdl.h"
 #include "source/segmentation/segmentation.h"
+#include "source/process/process.h"
 #include "err.h"
 
 

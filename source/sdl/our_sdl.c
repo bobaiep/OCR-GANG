@@ -4,6 +4,8 @@
 
 #include <err.h>
 #include "our_sdl.h"
+#include "SDL/SDL.h"
+#include "SDL/SDL_image.h"
 
 void init_sdl()
 {
