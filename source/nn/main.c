@@ -39,13 +39,13 @@ int main(){
     output_layer_bias[i] = init_weight();
   }
   printf("Finished all initialization !\n");
-  print_matrix("hidden_weight",hidden_weights,number_of_inputs,number_of_hidden_nodes);
-  print_matrix("output_weights",output_weights,number_of_hidden_nodes,number_of_outputs);
   
   for (int n=0; n < 10000; n++)
   {
     shuffle(trainingSetOrder,number_training_sets);
+    // TODO : Foward propagation
+    // TODO : Back propagation
+    // TODO : Weight update
   }
-  printf("Finished shuffle !\n");
   return 0;
 }
