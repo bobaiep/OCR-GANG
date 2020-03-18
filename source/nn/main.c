@@ -43,9 +43,36 @@ int main(){
   for (int n=0; n < 10000; n++)
   {
     shuffle(trainingSetOrder,number_training_sets);
-    // TODO : Foward propagation
-    // TODO : Back propagation
-    // TODO : Weight update
+    for (int x=0; x<number_training_sets; x++)
+    {
+      /*WIP : Foward pass = actually input some value into 
+      the neural network and see what we obtain out of it*/
+      int i = trainingSetOrder[x]; // Select a random tuple
+      for (int j=0; j<number_of_hidden_nodes; j++)
+      {
+        double activation=hidden_layer_bias[j];
+        for (int k=0; k<number_of_inputs; k++) 
+        {
+          activation+=training_inputs[i*number_of_inputs+k]*hidden_weights[k*number_of_hidden_nodes+j];
+        }
+        hidden_layer[j] = sigmoid(activation);
+      }
+
+      for (int j=0; j<number_of_outputs; j++)
+      {
+        double activation=output_layer_bias[j];
+        for (int k=0; k<number_of_hidden_nodes; k++) 
+        {
+          activation+=hidden_layer[k]*output_weights[k*number_of_outputs+j];
+        }
+        output_layer[j] = sigmoid(activation);
+      }
+      /* The output is at output_layer[0] => Write it into a file to see the evolution*/
+
+
+      // TODO : Back propagation = update the weight according to
+      // the result that we should have obtained
+    }
   }
   return 0;
 }
