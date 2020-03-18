@@ -2,12 +2,13 @@
 
 CC = gcc -fsanitize=address
 CPPFLAGS = -MMD
-CFLAGS = -Wall -Wextra -std=c99 -O0 -g
+CFLAGS = -Wall -Wextra -std=c99 -O3 -g
 LDFLAGS =
 LDLIBS =
 
-OBJ = matrix.o main.o sigmoid.o
-DEP = ${OBJ:.o=.d}
+SRC= main.c matrix.c sigmoid.c
+OBJ= $(SRC:.c=.o)
+DEP= $(SRC:.c=.d)
 
 all: main
 

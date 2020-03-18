@@ -3,6 +3,6 @@
 
 double sigmoid(double x);
 double dSigmoid(double x);
-float exponential(int n, float x);
+float expo(float x);
 double init_weight();
 #endif
