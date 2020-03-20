@@ -1,1 +1,0 @@
-sigmoid.o: sigmoid.c

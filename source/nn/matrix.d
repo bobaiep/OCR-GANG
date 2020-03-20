@@ -1,1 +1,0 @@
-matrix.o: matrix.c

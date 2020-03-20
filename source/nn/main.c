@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "matrix.h"
-#include "sigmoid.h"
+#include "source/matrix/matrix.h"
+#include "source/sigmoid/sigmoid.h"
 /*TODO : Right now the nn only has a "training mode", we should give the user 
 the possibility to choose between training the nn and actually using it*/
 
@@ -21,7 +21,7 @@ int main(){
   // creating file pointer to work with files
   FILE *result_file;
   // opening file in writing mode
-  result_file = fopen("Xor-data.txt", "w");
+  result_file = fopen("source/Xor/Xor-data.txt", "w");
   // TODO : fill in the training inputs and outputs - not working rn, dont't know why
   // Tried : 
   // double training_inputs[numTrainingSets*numInputs] = {0.0f,0.0f,1.0f,0.0f,0.0f,1.0f,1.0f,1.0f};
