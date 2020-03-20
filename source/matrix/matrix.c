@@ -4,7 +4,7 @@
 #include <err.h> // used for error - OK 
 #include <stddef.h> // used for size_t type, idk why but compiler said it was needed so 
 #include <stdio.h> // used for printf - OK
-#define RAND_MAX 0x7fffffff
+#include <stdlib.h>
 
 void print_matrix(char s[], double m[], size_t rows, size_t cols)
 {

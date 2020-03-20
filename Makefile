@@ -8,7 +8,7 @@ CFLAGS= -Wall -Wextra -Werror -std=c99 -O3
 LDFLAGS=
 LDLIBS= `pkg-config --libs sdl` -lSDL_image
 
-SRC= main.c source/process/process.c source/sdl/our_sdl.c source/segmentation/segmentation.c 
+SRC= main.c source/process/process.c source/sdl/our_sdl.c source/segmentation/segmentation.c source/matrix/matrix.c source/sigmoid/sigmoid.c
 OBJ= $(SRC:.c=.o)
 DEP= $(SRC:.c=.d)
 

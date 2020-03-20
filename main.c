@@ -10,6 +10,14 @@
 
 
 int main(int argc, char** argv) {
+    if (argc == 0){
+        printf("-----------------------\n");
+        printf("Bienvenue dans OCR GANG\n");
+        printf("-----------------------\n");
+        printf("Arguments :\n");
+        printf("    --seg   Montre la segmentation (spécifiez un image path)\n");
+        printf("    --XOR   Montre la fonction XOR\n");
+    }
     if (strcmp(argv[1], "--seg") == 0){
         init_sdl(); /* Init SDL */
 
@@ -168,13 +176,13 @@ int main(int argc, char** argv) {
                     deltaOutput[j] = errorOutput*dSigmoid(output_layer[j]);
                 }
                 printf("/ \r");
-                double deltaHidden[number_of_hidden_nodes];
+                //double deltaHidden[number_of_hidden_nodes];
                 for (int j=0; j<number_of_hidden_nodes; j++) {
                     double errorHidden = 0.0f;
                     for(int k=0; k<number_of_inputs; k++) {
                         errorHidden+=deltaOutput[k]*output_weights[j*number_of_outputs+k];
                     }
-                    deltaHidden[j] = errorHidden*dSigmoid(hidden_layer[j]);
+                    //deltaHidden[j] = errorHidden*dSigmoid(hidden_layer[j]);
                 }
                 printf("-- \r");
                 for (int j=0; j<number_of_inputs; j++)
