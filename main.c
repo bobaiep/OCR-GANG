@@ -92,23 +92,8 @@ int main(int argc, char** argv) {
             result_file = fopen("source/Xor/Xor-data.txt", "w");
             // TODO : fill in the training inputs and outputs - not working rn, dont't know why
             // Tried : 
-            // double training_inputs[numTrainingSets*numInputs] = {0.0f,0.0f,1.0f,0.0f,0.0f,1.0f,1.0f,1.0f};
-            // double training_outputs[numTrainingSets*numOutputs] = {0.0f,1.0f,1.0f,0.0f};
-            double training_inputs[number_training_sets*number_of_inputs];
-            double training_outputs[number_training_sets*number_of_outputs];
-            // Not working if not set manually
-            training_inputs[0]=0.0f;
-            training_inputs[1]=0.0f;
-            training_inputs[2]=1.0f;
-            training_inputs[3]=0.0f;
-            training_inputs[4]=0.0f;
-            training_inputs[5]=1.0f;
-            training_inputs[6]=1.0f;
-            training_inputs[7]=1.0f;
-            training_outputs[0]=0.0f;
-            training_outputs[1]=1.0f;
-            training_outputs[2]=1.0f;
-            training_outputs[3]=0.0f;
+            double training_inputs[] = {0.0f,0.0f,1.0f,0.0f,0.0f,1.0f,1.0f,1.0f};
+            double training_outputs[]= {0.0f,1.0f,1.0f,0.0f};
             int trainingSetOrder[] = {0,1,2,3};
             const double lr = 0.1f;
 
@@ -136,7 +121,7 @@ int main(int argc, char** argv) {
             printf("Finished all initialization !\n");
             printf("Started computing ... \n");
             printf("/ \r");
-            for (int n=0; n < 10000; n++)
+            for (int n=0; n < 7031; n++)
             {
                 shuffle(trainingSetOrder,number_training_sets);
                 for (int x=0; x<number_training_sets; x++)
@@ -168,8 +153,8 @@ int main(int argc, char** argv) {
                 /* DONE : write down the results contained in ouput_layer[0]
                 compared to what the results should have been 
                 => Write it into a file to see the evolution*/
-                fprintf(result_file, "input : %f ^ %f => output = %f\n",training_inputs[i*0],training_inputs[i*1],output_layer[0]);
-                // WIP : Back propagation = update the weight according to
+                fprintf(result_file, "input : %f ^ %f => output = %f , expected : %f\n",training_inputs[i*number_of_inputs],training_inputs[i*number_of_inputs+1],output_layer[0],training_outputs[i*number_of_outputs]);
+                // DONE : Back propagation = update the weight according to
                 // the result that we should have obtained
                 double deltaOutput[number_of_inputs];
                 for (int j=0; j<number_of_inputs; j++) {
@@ -177,13 +162,13 @@ int main(int argc, char** argv) {
                     deltaOutput[j] = errorOutput*dSigmoid(output_layer[j]);
                 }
                 printf("/ \r");
-                //double deltaHidden[number_of_hidden_nodes];
+                double deltaHidden[number_of_hidden_nodes];
                 for (int j=0; j<number_of_hidden_nodes; j++) {
                     double errorHidden = 0.0f;
                     for(int k=0; k<number_of_inputs; k++) {
                         errorHidden+=deltaOutput[k]*output_weights[j*number_of_outputs+k];
                     }
-                    //deltaHidden[j] = errorHidden*dSigmoid(hidden_layer[j]);
+                    deltaHidden[j] = errorHidden*dSigmoid(hidden_layer[j]);
                 }
                 printf("-- \r");
                 for (int j=0; j<number_of_inputs; j++)
@@ -191,17 +176,17 @@ int main(int argc, char** argv) {
                     output_layer_bias[j] += deltaOutput[j]*lr;
                     for (int k=0; k<number_of_hidden_nodes; k++)
                     {
-                    output_weights[k+j*number_of_hidden_nodes]+=hidden_layer[k]*deltaOutput[j]*lr;
+                        output_weights[k+j*number_of_hidden_nodes]+=hidden_layer[k]*deltaOutput[j]*lr;
                     }
                 }
                 printf("'\' \r");
                 // TOFIX : Update the weights of hidden layer - Not working (memory leak) when uncomment 
                 for(int w = 0;w < number_of_hidden_nodes;w++)
                 {
-                    hidden_layer_bias[w] = hidden_layer_bias[w]/*+ deltaHidden[w]*/*lr;
+                    hidden_layer_bias[w] += deltaHidden[w]*lr;
                     for(int k=0; k<number_of_inputs; k++) 
                     {
-                    hidden_weights[k*number_of_inputs+w] += lr*training_inputs[i*number_of_inputs+k]; // * deltaHidden[w]
+                        hidden_weights[k*number_of_inputs+w] += lr*training_inputs[i*number_of_inputs+k]* deltaHidden[w];
                     }
                 }
                 }
