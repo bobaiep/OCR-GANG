@@ -10,13 +10,14 @@
 
 
 int main(int argc, char** argv) {
-    if (argc == 0){
+    if (argc!=2){
         printf("-----------------------\n");
         printf("Bienvenue dans OCR GANG\n");
         printf("-----------------------\n");
         printf("Arguments :\n");
         printf("    --seg   Montre la segmentation (spécifiez un image path)\n");
         printf("    --XOR   Montre la fonction XOR\n");
+        return 0;
     }
     if (strcmp(argv[1], "--seg") == 0){
         init_sdl(); /* Init SDL */
@@ -217,6 +218,7 @@ int main(int argc, char** argv) {
             printf("Arguments :\n");
             printf("    --seg   Montre la segmentation (spécifiez un image path)\n");
             printf("    --XOR   Montre la fonction XOR\n");
+            return 0;
         }
     }
     return 0;
