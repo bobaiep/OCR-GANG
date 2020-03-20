@@ -19,5 +19,6 @@ main: $(OBJ)
 clean:
 	$(RM) $(OBJ) $(OBJ_TESTS) $(DEP) $(DEP_TESTS) main && clear
 	rm -f *.bmp
+	rm img/temp/*.bmp
 
 # END

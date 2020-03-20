@@ -40,9 +40,10 @@ int main(int argc, char** argv) {
         char file[12];
         for (int j = 0; j < BlocNumber; ++j) {
             for (int i = 0; i < NumberOfLetters(blocs[j]); ++i) {
+                char loc[100] = "img/temp/";
                 sprintf(file,"%i",j*100 + i);
                 strcat(file,".bmp");
-                SDL_SaveBMP(letters[j][i], file); //Save blocs in folder
+                SDL_SaveBMP(letters[j][i], strcat(loc,file)); //Save blocs in folder
             }
         }
 
