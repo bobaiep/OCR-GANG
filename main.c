@@ -96,106 +96,31 @@ int main(int argc, char** argv) {
             double training_inputs[] = {0.0f,0.0f,1.0f,0.0f,0.0f,1.0f,1.0f,1.0f};
             double training_outputs[]= {0.0f,1.0f,1.0f,0.0f};
             int trainingSetOrder[] = {0,1,2,3};
-            const double lr = 0.1f;
+            const double lr = 0.7f;
 
             //TODO : See if the file exist ()
             /* Init all the matrices (suppose that the file is empty)*/
-            for (int i=0; i<number_of_inputs; i++)
-            {
-                for (int j=0; j<number_of_hidden_nodes; j++)
-                {
-                hidden_weights[i*number_of_hidden_nodes+j] = init_weight();
-                }
-            }
-            for (int i = 0; i < number_of_hidden_nodes; i++)
-            {
-                hidden_layer_bias[i] = init_weight();
-                for (int j = 0; j < number_of_outputs; j++)
-                {
-                output_weights[i*number_of_outputs+j] = init_weight();
-                }
-            }
-            for (int i = 0; i < number_of_hidden_nodes; i++)
-            {
-                output_layer_bias[i] = init_weight();
-            }
+
+            //TODO : See if the file exist ()
+            /* Init all the matrices (suppose that the file is empty)*/
+            FILE *weights_and_biases ;
+            weights_and_biases = fopen("source/Xor/Xor-weights.txt", "r");
+            fclose(weights_and_biases);
+            initialization(number_of_inputs,number_of_hidden_nodes,number_of_outputs,hidden_weights,hidden_layer_bias,output_weights);
             printf("Finished all initialization !\n");
             printf("Started computing ... \n");
-            printf("/ \r");
             for (int n=0; n < 7031; n++)
             {
                 shuffle(trainingSetOrder,number_training_sets);
                 for (int x=0; x<number_training_sets; x++)
                 {
-                printf("-- \r");
-                /*DONE : Foward pass = actually input some value into
-                the neural network and see what we obtain out of it*/
-                int i = trainingSetOrder[x]; // Select a random tuple
-                for (int j=0; j<number_of_hidden_nodes; j++)
-                {
-                    double activation=hidden_layer_bias[j];
-                    for (int k=0; k<number_of_inputs; k++)
-                    {
-                    activation+=training_inputs[i*number_of_inputs+k]*hidden_weights[k*number_of_hidden_nodes+j];
-                    }
-                    hidden_layer[j] = sigmoid(activation);
-                }
-                printf("'\' \r");
-                for (int j=0; j<number_of_outputs; j++)
-                {
-                    double activation=output_layer_bias[j];
-                    for (int k=0; k<number_of_hidden_nodes; k++)
-                    {
-                    activation+=hidden_layer[k]*output_weights[k*number_of_outputs+j];
-                    }
-                    output_layer[j] = sigmoid(activation);
-                }
-                printf("| \r");
-                /* DONE : write down the results contained in ouput_layer[0]
-                compared to what the results should have been 
-                => Write it into a file to see the evolution*/
-                fprintf(result_file, "input : %f ^ %f => output = %f , expected : %f\n",training_inputs[i*number_of_inputs],training_inputs[i*number_of_inputs+1],output_layer[0],training_outputs[i*number_of_outputs]);
-                // DONE : Back propagation = update the weight according to
-                // the result that we should have obtained
-                double deltaOutput[number_of_inputs];
-                for (int j=0; j<number_of_inputs; j++) {
-                    double errorOutput = (training_outputs[i*number_of_outputs+j]-output_layer[j]);
-                    deltaOutput[j] = errorOutput*dSigmoid(output_layer[j]);
-                }
-                printf("/ \r");
-                double deltaHidden[number_of_hidden_nodes];
-                for (int j=0; j<number_of_hidden_nodes; j++) {
-                    double errorHidden = 0.0f;
-                    for(int k=0; k<number_of_inputs; k++) {
-                        errorHidden+=deltaOutput[k]*output_weights[j*number_of_outputs+k];
-                    }
-                    deltaHidden[j] = errorHidden*dSigmoid(hidden_layer[j]);
-                }
-                printf("-- \r");
-                for (int j=0; j<number_of_inputs; j++)
-                {
-                    output_layer_bias[j] += deltaOutput[j]*lr;
-                    for (int k=0; k<number_of_hidden_nodes; k++)
-                    {
-                        output_weights[k+j*number_of_hidden_nodes]+=hidden_layer[k]*deltaOutput[j]*lr;
-                    }
-                }
-                printf("'\' \r");
-                // TOFIX : Update the weights of hidden layer - Not working (memory leak) when uncomment 
-                for(int w = 0;w < number_of_hidden_nodes;w++)
-                {
-                    hidden_layer_bias[w] += deltaHidden[w]*lr;
-                    for(int k=0; k<number_of_inputs; k++) 
-                    {
-                        hidden_weights[k*number_of_inputs+w] += lr*training_inputs[i*number_of_inputs+k]* deltaHidden[w];
-                    }
-                }
+                    int i = forward_pass(x ,number_of_inputs,number_of_hidden_nodes,number_of_outputs,trainingSetOrder,training_inputs,hidden_weights,hidden_layer_bias,output_weights,output_layer_bias,hidden_layer,output_layer);
+                    fprintf(result_file, "input : %f ^ %f => output = %f , expected : %f\n",training_inputs[i*number_of_inputs],training_inputs[i*number_of_inputs+1],output_layer[0],training_outputs[i*number_of_outputs]);
+                    back_propagation(lr, i,number_of_inputs,number_of_hidden_nodes,number_of_outputs,training_inputs,training_outputs,hidden_weights,hidden_layer_bias,output_weights,output_layer_bias,hidden_layer,output_layer);
                 }
             }
             fclose(result_file);
-            //TODO : write down the final weight and the biases of the hidden layer and the output layer into Xor-weights.txt
-            // creating file pointer to work with files
-            printf("Done! \n");
+            save_weights_bias(number_of_outputs,number_of_hidden_nodes,number_of_inputs,output_layer_bias,output_weights,hidden_layer_bias,hidden_weights);
         }
         else{
             printf("-----------------------\n");
