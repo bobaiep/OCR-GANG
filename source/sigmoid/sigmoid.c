@@ -3,6 +3,19 @@
 #include <stdio.h> 
 #include <stdlib.h> 
 
+void progressBar(int step,int nb){
+    printf("\e[?25l");
+    int percent = (step*100)/nb;
+    const int pwidth = 72;
+    int pos = (step*pwidth)/nb;
+    printf("[");
+    for (int i = 0; i < pos; i++)
+    {
+        printf("%c",'=');
+    }
+    printf("%*c ",pwidth-pos+1,']');
+    printf(" %3d%%\r",percent);
+}
 float expo(float x) // Self explanitory, just in case cannot use math.h
 { 
     float sum = 1.0f;
@@ -31,10 +44,23 @@ double init_weight()
     return ((double)rand())/((double)RAND_MAX); // RAND_MAX is a constant defined above
 }
 
+int cfileexists(const char * filename) //NOT WORKING RN
+{
+    /* try to open file to read */
+    FILE *file;
+    file = fopen(filename, "r");
+    if (!file)
+    {
+        fclose(file);
+        return 1;
+    }
+    fclose(file);
+    return 0;
+}
+
 void save_weights_bias(int number_of_outputs,int number_of_hidden_nodes,int number_of_inputs,double output_layer_bias[],double output_weights[],double hidden_layer_bias[],double hidden_weights[]){
-    //TODO : write down the final weight and the biases of the hidden layer and the output layer into Xor-weights.txt
+    //DONE : write down the final weight and the biases of the hidden layer and the output layer into Xor-weights.txt
     FILE *weights_and_biases ;
-    weights_and_biases = fopen("source/Xor/Xor-weights.txt", "r");
     printf("Saving weights and biases...\n");
     weights_and_biases = fopen("source/Xor/Xor-weights.txt","w");
     for (int j=0; j<number_of_outputs; j++)

@@ -100,17 +100,18 @@ int main(int argc, char** argv) {
 
             //TODO : See if the file exist ()
             /* Init all the matrices (suppose that the file is empty)*/
-
-            //TODO : See if the file exist ()
-            /* Init all the matrices (suppose that the file is empty)*/
             FILE *weights_and_biases ;
             weights_and_biases = fopen("source/Xor/Xor-weights.txt", "r");
             fclose(weights_and_biases);
             initialization(number_of_inputs,number_of_hidden_nodes,number_of_outputs,hidden_weights,hidden_layer_bias,output_weights);
             printf("Finished all initialization !\n");
             printf("Started computing ... \n");
-            for (int n=0; n < 7031; n++)
+            int nb = 7031;
+            int step = 0;
+            for (int n=0; n < nb; n++)
             {
+                step++;
+                progressBar(step,nb);
                 shuffle(trainingSetOrder,number_training_sets);
                 for (int x=0; x<number_training_sets; x++)
                 {
@@ -119,6 +120,8 @@ int main(int argc, char** argv) {
                     back_propagation(lr, i,number_of_inputs,number_of_hidden_nodes,number_of_outputs,training_inputs,training_outputs,hidden_weights,hidden_layer_bias,output_weights,output_layer_bias,hidden_layer,output_layer);
                 }
             }
+            printf("\n");
+            printf("\e[?25h");
             fclose(result_file);
             save_weights_bias(number_of_outputs,number_of_hidden_nodes,number_of_inputs,output_layer_bias,output_weights,hidden_layer_bias,hidden_weights);
         }
