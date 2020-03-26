@@ -87,43 +87,56 @@ int main(int argc, char** argv) {
             double hidden_weights[number_of_inputs*number_of_hidden_nodes];
             double output_weights[number_of_hidden_nodes*number_of_outputs];
             static const int number_training_sets = 4;
-            // creating file pointer to work with files
             FILE *result_file;
-            // opening file in writing mode
-            result_file = fopen("source/Xor/Xor-data.txt", "w");
-            // TODO : fill in the training inputs and outputs - not working rn, dont't know why
-            // Tried : 
+            result_file = fopen("source/Xor/Xor-data.txt", "w"); 
             double training_inputs[] = {0.0f,0.0f,1.0f,0.0f,0.0f,1.0f,1.0f,1.0f};
             double training_outputs[]= {0.0f,1.0f,1.0f,0.0f};
             int trainingSetOrder[] = {0,1,2,3};
-            const double lr = 0.7f;
+            const double lr = 0.5f;
 
-            //TODO : See if the file exist ()
-            /* Init all the matrices (suppose that the file is empty)*/
-            FILE *weights_and_biases ;
-            weights_and_biases = fopen("source/Xor/Xor-weights.txt", "r");
-            fclose(weights_and_biases);
-            initialization(number_of_inputs,number_of_hidden_nodes,number_of_outputs,hidden_weights,hidden_layer_bias,output_weights);
-            printf("Finished all initialization !\n");
-            printf("Started computing ... \n");
-            int nb = 7031;
-            int step = 0;
-            for (int n=0; n < nb; n++)
+            if(cfileexists("source/Xor/Xor-weights.txt")&&!fileempty("source/Xor/Xor-weights.txt"))
             {
-                step++;
-                progressBar(step,nb);
-                shuffle(trainingSetOrder,number_training_sets);
-                for (int x=0; x<number_training_sets; x++)
-                {
-                    int i = forward_pass(x ,number_of_inputs,number_of_hidden_nodes,number_of_outputs,trainingSetOrder,training_inputs,hidden_weights,hidden_layer_bias,output_weights,output_layer_bias,hidden_layer,output_layer);
-                    fprintf(result_file, "input : %f ^ %f => output = %f , expected : %f\n",training_inputs[i*number_of_inputs],training_inputs[i*number_of_inputs+1],output_layer[0],training_outputs[i*number_of_outputs]);
-                    back_propagation(lr, i,number_of_inputs,number_of_hidden_nodes,number_of_outputs,training_inputs,training_outputs,hidden_weights,hidden_layer_bias,output_weights,output_layer_bias,hidden_layer,output_layer);
-                }
+                read_file("source/Xor/Xor-weights.txt",number_of_inputs,number_of_outputs, number_of_hidden_nodes,hidden_layer_bias,hidden_weights,output_layer_bias,output_weights);
             }
-            printf("\n");
-            printf("\e[?25h");
-            fclose(result_file);
-            save_weights_bias(number_of_outputs,number_of_hidden_nodes,number_of_inputs,output_layer_bias,output_weights,hidden_layer_bias,hidden_weights);
+            else{
+                initialization(number_of_inputs,number_of_hidden_nodes,number_of_outputs,hidden_weights,hidden_layer_bias,output_weights);
+            }
+            printf("Finished all initialization !\n");
+            char answer[1];
+            printf("Do you want to train the neural network or use it ?\n1 = Train it\n2 = Use it\n");
+            fgets(answer,2,stdin);
+            printf("Started computing ... \n");
+            if (atoi(&answer[0])== 1)
+            {
+                int nb = 1000;
+                int step = 0;
+                for (int n=0; n < nb; n++)
+                {
+                    step++;
+                    progressBar(step,nb);
+                    shuffle(trainingSetOrder,number_training_sets);
+                    for (int x=0; x<number_training_sets; x++)
+                    {
+                        int i = forward_pass(x ,number_of_inputs,number_of_hidden_nodes,number_of_outputs,trainingSetOrder,training_inputs,hidden_weights,hidden_layer_bias,output_weights,output_layer_bias,hidden_layer,output_layer);
+                        fprintf(result_file, "input : %f ^ %f => output = %f , expected : %f\n",training_inputs[i*number_of_inputs],training_inputs[i*number_of_inputs+1],output_layer[0],training_outputs[i*number_of_outputs]);
+                        back_propagation(lr, i,number_of_inputs,number_of_hidden_nodes,number_of_outputs,training_inputs,training_outputs,hidden_weights,hidden_layer_bias,output_weights,output_layer_bias,hidden_layer,output_layer);
+                    }
+                }
+                printf("\n");
+                printf("\e[?25h");
+                fclose(result_file);
+                save_weights_bias(number_of_outputs,number_of_hidden_nodes,number_of_inputs,output_layer_bias,output_weights,hidden_layer_bias,hidden_weights);
+            }
+            else if (atoi(&answer[0])== 2)
+            {
+                printf("not implemented yet, come back later!");
+                /*char input1[1];
+                char input2[1];
+                printf("Please input the value you want to enter.\n");
+                fgets(input1,2,stdin);
+                fgets(input2,2,stdin);*/
+            }
+            
         }
         else{
             printf("-----------------------\n");

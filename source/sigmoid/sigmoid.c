@@ -52,34 +52,87 @@ int cfileexists(const char * filename) //NOT WORKING RN
     if (!file)
     {
         fclose(file);
-        return 1;
+        return 0;
     }
     fclose(file);
-    return 0;
+    return 1;
 }
 
-void save_weights_bias(int number_of_outputs,int number_of_hidden_nodes,int number_of_inputs,double output_layer_bias[],double output_weights[],double hidden_layer_bias[],double hidden_weights[]){
-    //DONE : write down the final weight and the biases of the hidden layer and the output layer into Xor-weights.txt
-    FILE *weights_and_biases ;
-    printf("Saving weights and biases...\n");
-    weights_and_biases = fopen("source/Xor/Xor-weights.txt","w");
-    for (int j=0; j<number_of_outputs; j++)
+int fileempty(const char * filename){
+    FILE *fptr;
+    fptr = fopen( filename, "r" );
+    fseek(fptr, 0, SEEK_END);
+    unsigned long len = (unsigned long)ftell(fptr);
+    if (len>0){
+        return 0;
+    }
+    else
     {
-        fprintf(weights_and_biases, "ob :%f\n", output_layer_bias[j]);
-        for (int k=0; k<number_of_hidden_nodes; k++)
-        {
-            fprintf(weights_and_biases, "ow :%f\n",output_weights[k+j*number_of_hidden_nodes]);
-        }
+        return 1;
+    }
+    
+}
+
+void read_file(const char * filename,int number_of_inputs,int number_of_outputs, int number_of_hidden_nodes,double hidden_layer_bias[],double hidden_weights[],double output_layer_bias[],double output_weights[]){
+    FILE *fptr;
+    fptr = fopen( filename, "r" );
+    for (int i = 0; i < number_of_hidden_nodes; i++)
+    {
+        fscanf(fptr," %lf",&hidden_layer_bias[i]);
     }
     for(int w = 0;w < number_of_hidden_nodes;w++)
     {
-        fprintf(weights_and_biases, "hb :%f\n",hidden_layer_bias[w]);
         for(int k=0; k<number_of_inputs; k++) 
         {
-            fprintf(weights_and_biases, "hw :%f\n",hidden_weights[k*number_of_inputs+w]);
+            fscanf(fptr," %lf",&hidden_weights[k*number_of_inputs+w]);
         }
     }
+    for (int j=0; j<number_of_outputs; j++)
+    {
+        fscanf(fptr," %lf",&output_layer_bias[j]);
+    }
+    for (int j=0; j<number_of_outputs; j++)
+    {
+        for (int k=0; k<number_of_hidden_nodes; k++)
+        {
+            fprintf(fptr," %f",output_weights[k+j*number_of_hidden_nodes]);
+        }
+    }
+    fclose(fptr);
+}
+
+void save_weights_bias(int number_of_outputs,int number_of_hidden_nodes,int number_of_inputs,double output_layer_bias[],double output_weights[],double hidden_layer_bias[],double hidden_weights[] ){
+    FILE *weights_and_biases ;
+    printf("Saving weights and biases...\n");
+    weights_and_biases = fopen("source/Xor/Xor-weights.txt","w");
+    for(int w = 0;w < number_of_hidden_nodes;w++)
+    {
+        fprintf(weights_and_biases, " %f",hidden_layer_bias[w]);
+    }
+    fprintf(weights_and_biases, "\n");
+    for(int w = 0;w < number_of_hidden_nodes;w++)
+    {
+        for(int k=0; k<number_of_inputs; k++) 
+        {
+            fprintf(weights_and_biases, " %f",hidden_weights[k*number_of_inputs+w]);
+        }
+    }
+    fprintf(weights_and_biases, "\n");
+    for (int j=0; j<number_of_outputs; j++)
+    {
+        fprintf(weights_and_biases, " %f", output_layer_bias[j]);
+    }
+    fprintf(weights_and_biases, "\n");
+    for (int j=0; j<number_of_outputs; j++)
+    {
+        for (int k=0; k<number_of_hidden_nodes; k++)
+        {
+            fprintf(weights_and_biases, " %f",output_weights[k+j*number_of_hidden_nodes]);
+        }
+    }
+    fprintf(weights_and_biases, "\n");
     printf("Done! \n");
+    fclose(weights_and_biases);
 }
 
 void initialization(int number_of_inputs,int number_of_hidden_nodes,int number_of_outputs,double hidden_weights[],double hidden_layer_bias[],double output_weights[]){
