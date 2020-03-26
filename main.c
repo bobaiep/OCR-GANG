@@ -105,9 +105,9 @@ int main(int argc, char** argv) {
             char answer[1];
             printf("Do you want to train the neural network or use it ?\n1 = Train it\n2 = Use it\n");
             fgets(answer,2,stdin);
-            printf("Started computing ... \n");
             if (atoi(&answer[0])== 1)
             {
+                printf("Started computing ... \n");
                 int nb = 1000;
                 int step = 0;
                 for (int n=0; n < nb; n++)
@@ -129,7 +129,7 @@ int main(int argc, char** argv) {
             }
             else if (atoi(&answer[0])== 2)
             {
-                printf("not implemented yet, come back later!");
+                printf("Not implemented yet, come back later!\n");
                 /*char input1[1];
                 char input2[1];
                 printf("Please input the value you want to enter.\n");
