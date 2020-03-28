@@ -190,7 +190,7 @@ void back_propagation(double lr, int i,int number_of_inputs,int number_of_hidden
     for (int j=0; j<number_of_hidden_nodes; j++) {
         double errorHidden = 0.0f;
         for(int k=0; k<number_of_inputs; k++) {
-            errorHidden+=deltaOutput[k]*output_weights[j*number_of_outputs+k];
+            errorHidden+=deltaOutput[k]*output_weights[j*number_of_hidden_nodes+k];
         }
         deltaHidden[j] = errorHidden*dSigmoid(hidden_layer[j]);
     }

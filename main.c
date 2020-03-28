@@ -92,7 +92,7 @@ int main(int argc, char** argv) {
             double training_inputs[] = {0.0f,0.0f,1.0f,0.0f,0.0f,1.0f,1.0f,1.0f};
             double training_outputs[]= {0.0f,1.0f,1.0f,0.0f};
             int trainingSetOrder[] = {0,1,2,3};
-            const double lr = 0.5f;
+            const double lr = 0.01f;
 
             if(cfileexists("source/Xor/Xor-weights.txt")&&!fileempty("source/Xor/Xor-weights.txt"))
             {
@@ -108,8 +108,9 @@ int main(int argc, char** argv) {
             if (atoi(&answer[0])== 1)
             {
                 printf("Started computing ... \n");
-                int nb = 1000;
+                int nb = 1000000;
                 int step = 0;
+                int i;
                 for (int n=0; n < nb; n++)
                 {
                     step++;
@@ -117,10 +118,10 @@ int main(int argc, char** argv) {
                     shuffle(trainingSetOrder,number_training_sets);
                     for (int x=0; x<number_training_sets; x++)
                     {
-                        int i = forward_pass(x ,number_of_inputs,number_of_hidden_nodes,number_of_outputs,trainingSetOrder,training_inputs,hidden_weights,hidden_layer_bias,output_weights,output_layer_bias,hidden_layer,output_layer);
-                        fprintf(result_file, "input : %f ^ %f => output = %f , expected : %f\n",training_inputs[i*number_of_inputs],training_inputs[i*number_of_inputs+1],output_layer[0],training_outputs[i*number_of_outputs]);
+                        i = forward_pass(x ,number_of_inputs,number_of_hidden_nodes,number_of_outputs,trainingSetOrder,training_inputs,hidden_weights,hidden_layer_bias,output_weights,output_layer_bias,hidden_layer,output_layer);
                         back_propagation(lr, i,number_of_inputs,number_of_hidden_nodes,number_of_outputs,training_inputs,training_outputs,hidden_weights,hidden_layer_bias,output_weights,output_layer_bias,hidden_layer,output_layer);
                     }
+                    fprintf(result_file, "input : %f ^ %f => output = %f , expected : %f\n",training_inputs[i*number_of_inputs],training_inputs[i*number_of_inputs+1],output_layer[0],training_outputs[i*number_of_outputs]);
                 }
                 printf("\n");
                 printf("\e[?25h");
