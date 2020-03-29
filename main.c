@@ -24,11 +24,18 @@ int main(int argc, char** argv) {
 
         /* Load Image */
         SDL_Surface* image=load_image(argv[2]);
+        SDL_Surface* screen_surface = display_image(image);
 
-        SDL_LockSurface(image);
+        wait_for_keypressed();
+
+        //SDL_LockSurface(image);
         
         /* Black and White */
         image = black_and_white(image);
+
+        screen_surface = display_image(image);
+
+        wait_for_keypressed();
 
         DrawLines(image); //Separates into blocs delimited by red color
         int BlocNumber = NumberOfBlocs(image);
@@ -47,32 +54,21 @@ int main(int argc, char** argv) {
             }
         }
 
-        SDL_UnlockSurface(image);
+        //SDL_UnlockSurface(image);
 
-        SDL_SaveBMP(image,"new.bmp"); //Save image in folder
+        SDL_SaveBMP(image,"segmentation.bmp"); //Save image in folder
 
-        /*
-        SDL_Surface* screen = display_image(image);
+        SDL_Surface* new_image=load_image("segmentation.bmp");
 
-        SDL_Event event;
+        screen_surface = display_image(new_image);
 
-        // Wait for a key to be down.
-        do
-        {
-            SDL_PollEvent(&event);
-        } while(event.type != SDL_KEYDOWN);
+        wait_for_keypressed();
 
-        // Wait for a key to be up.
-        do
-        {
-            SDL_PollEvent(&event);
-        } while(event.type != SDL_KEYUP);
-
-        SDL_FreeSurface(screen);
-        */
+        SDL_FreeSurface(image);
+        SDL_FreeSurface(new_image);
+        SDL_FreeSurface(screen_surface);
 
         SDL_Quit();
-        printf("%i \n",NumberOfLetters(blocs[0]));
     }
     else{
         if(strcmp(argv[1], "--XOR")==0){

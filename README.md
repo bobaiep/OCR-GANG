@@ -1,11 +1,22 @@
 # Welcome to OCR-GANG 👋
-![Version](https://img.shields.io/badge/version-0-blue.svg?cacheSeconds=2592000)
+![Version](https://img.shields.io/badge/version-1.0-blue.svg?cacheSeconds=2592000)
 
-> Create a OCR
+> Create a OCR in C
+
+
+## Usage
+
+```sh
+-----------------------
+Bienvenue dans OCR GANG
+-----------------------
+Taper make dans le répertoire du projet puis lancez le programme via la console en tapant ./main
+Arguments :
+    --seg   Montre la segmentation (spécifiez un image path)
+    --XOR   Montre la fonction XOR
+```
 
 ## Authors
 
-👤 **marius.andre**
-👤 **pierre.megalli**
-👤 **theo.le-bever**
-👤 **maxence.de-torquat-de-la-coulerie**
+👤 **Marius ANDRE ** 👤 **Pierre MEGALLI ** 👤 **Théo LE BEVER ** 👤 **Maxence DE TORQUAT DE LA COULERIE **
+
