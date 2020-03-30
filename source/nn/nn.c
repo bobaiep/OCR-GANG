@@ -31,20 +31,22 @@ float expo(float x) // Self explanitory, just in case cannot use math.h
 
 double sigmoid(double x)
 {
-    return 1 / (1 + expo(-x)); // Will be used to adjust the activation of hiddenlayer and outputlayer nodes
+    return 1 / (1 + expo(-x)); 
+    // Will be used to adjust the activation of hiddenlayer and outputlayer nodes
 }
 double dSigmoid(double x)
 { 
-    return x * (1 - x); // Will be used to compute the weigth of hiddenlayer and outputlayer nodes
+    return x * (1 - x); 
+    // Will be used to compute the weigth of hiddenlayer and outputlayer nodes
 }
 
 // Init all weights and biases between 0.0 and 1.0
 double init_weight() 
 { 
-    return ((double)rand())/((double)RAND_MAX); // RAND_MAX is a constant defined above
+    return ((double)rand())/((double)RAND_MAX+1);
 }
 
-int cfileexists(const char * filename) //NOT WORKING RN
+int cfileexists(const char * filename) 
 {
     /* try to open file to read */
     FILE *file;
@@ -73,7 +75,9 @@ int fileempty(const char * filename){
     
 }
 
-void read_file(const char * filename,int number_of_inputs,int number_of_outputs, int number_of_hidden_nodes,double hidden_layer_bias[],double hidden_weights[],double output_layer_bias[],double output_weights[]){
+void read_file(const char * filename,int number_of_inputs,int number_of_outputs,\
+ int number_of_hidden_nodes,double hidden_layer_bias[],double hidden_weights[],\
+ double output_layer_bias[],double output_weights[]){
     FILE *fptr;
     fptr = fopen( filename, "r" );
     for (int i = 0; i < number_of_hidden_nodes; i++)
@@ -101,7 +105,9 @@ void read_file(const char * filename,int number_of_inputs,int number_of_outputs,
     fclose(fptr);
 }
 
-void save_weights_bias(int number_of_outputs,int number_of_hidden_nodes,int number_of_inputs,double output_layer_bias[],double output_weights[],double hidden_layer_bias[],double hidden_weights[] ){
+void save_weights_bias(int number_of_outputs,int number_of_hidden_nodes,\
+int number_of_inputs,double output_layer_bias[],double output_weights[],\
+double hidden_layer_bias[],double hidden_weights[] ){
     FILE *weights_and_biases ;
     printf("Saving weights and biases...\n");
     weights_and_biases = fopen("source/Xor/Xor-weights.txt","w");
@@ -135,7 +141,9 @@ void save_weights_bias(int number_of_outputs,int number_of_hidden_nodes,int numb
     fclose(weights_and_biases);
 }
 
-void initialization(int number_of_inputs,int number_of_hidden_nodes,int number_of_outputs,double hidden_weights[],double hidden_layer_bias[],double output_weights[]){
+void initialization(int number_of_inputs,int number_of_hidden_nodes,\
+int number_of_outputs,double hidden_weights[],double hidden_layer_bias[],\
+double output_weights[]){
     for (int i=0; i<number_of_inputs; i++)
     {
         for (int j=0; j<number_of_hidden_nodes; j++)
@@ -153,7 +161,10 @@ void initialization(int number_of_inputs,int number_of_hidden_nodes,int number_o
     }
 }
 
-int forward_pass(int x , int number_of_inputs,int number_of_hidden_nodes,int number_of_outputs,int trainingSetOrder[],double training_inputs[],double hidden_weights[],double hidden_layer_bias[],double output_weights[],double output_layer_bias[],double hidden_layer[],double output_layer[]){
+int forward_pass(int x , int number_of_inputs,int number_of_hidden_nodes,\
+int number_of_outputs,int trainingSetOrder[],double training_inputs[],\
+double hidden_weights[],double hidden_layer_bias[],double output_weights[],\
+double output_layer_bias[],double hidden_layer[],double output_layer[]){
     /*DONE : Foward pass = actually input some value into
     the neural network and see what we obtain out of it*/
     int i = trainingSetOrder[x]; // Select a random tuple
@@ -178,7 +189,10 @@ int forward_pass(int x , int number_of_inputs,int number_of_hidden_nodes,int num
     return i;
 }
 
-void back_propagation(double lr, int i,int number_of_inputs,int number_of_hidden_nodes,int number_of_outputs,double training_inputs[],double training_outputs[],double hidden_weights[],double hidden_layer_bias[],double output_weights[],double output_layer_bias[],double hidden_layer[],double output_layer[]){
+void back_propagation(double lr, int i,int number_of_inputs,int number_of_hidden_nodes,\
+int number_of_outputs,double training_inputs[],double training_outputs[],double hidden_weights[],\
+double hidden_layer_bias[],double output_weights[],double output_layer_bias[],double hidden_layer[],\
+double output_layer[]){
     /*DONE : Back propagation = update the weight according to 
     what we should have obtained out of the neural network*/
     double deltaOutput[number_of_inputs];
@@ -208,6 +222,20 @@ void back_propagation(double lr, int i,int number_of_inputs,int number_of_hidden
         for(int k=0; k<number_of_inputs; k++) 
         {
             hidden_weights[k*number_of_inputs+w] += lr*training_inputs[i*number_of_inputs+k]* deltaHidden[w];
+        }
+    }
+}
+
+void shuffle(int *array, size_t n)
+{
+    if (n > 1)
+    {
+        for (size_t i = 0; i < n - 1; i++)
+        {
+            size_t j = i + rand() / (RAND_MAX / (n - i) + 1);
+            int t = array[j];
+            array[j] = array[i];
+            array[i] = t;
         }
     }
 }
