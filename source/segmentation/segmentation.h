@@ -4,10 +4,10 @@
 #ifndef SEGMENTATION_H_
 #define SEGMENTATION_H_
 
-void DrawLines(SDL_Surface *image);
-int NumberOfBlocs(SDL_Surface *image);
-void DivideIntoBlocs(SDL_Surface *image,SDL_Surface **blocs, SDL_Surface ***letters);
-void DrawColumns(SDL_Surface *image);
-int NumberOfLetters(SDL_Surface *image);
+void DrawRedLines(SDL_Surface *image);
+int CountBlocs(SDL_Surface *image);
+void DivideIntoBlocs(SDL_Surface *image,SDL_Surface **blocs, SDL_Surface ***chars);
+void DrawLinesUp(SDL_Surface *image);
+int CountChars(SDL_Surface *image);
 
 #endif

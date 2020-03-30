@@ -20,54 +20,39 @@ int main(int argc, char** argv) {
         return 0;
     }
     if (strcmp(argv[1], "--seg") == 0){
-        init_sdl(); /* Init SDL */
-
+        /* Init SDL */
+        init_sdl();
         /* Load Image */
         SDL_Surface* image=load_image(argv[2]);
         SDL_Surface* screen_surface = display_image(image);
-
         wait_for_keypressed();
-
-        //SDL_LockSurface(image);
-        
         /* Black and White */
         image = black_and_white(image);
-
         screen_surface = display_image(image);
-
         wait_for_keypressed();
+        /*Trace red lines*/
+        DrawRedLines(image);
+        int BlocCount = CountBlocs(image);
+        SDL_Surface ***chars = malloc(sizeof(SDL_Surface**) * BlocCount);
+        SDL_Surface **blocs = malloc(sizeof(SDL_Surface*) * BlocCount);
 
-        DrawLines(image); //Separates into blocs delimited by red color
-        int BlocNumber = NumberOfBlocs(image);
-        SDL_Surface ***letters = malloc(sizeof(SDL_Surface**) * BlocNumber);
-        SDL_Surface **blocs = malloc(sizeof(SDL_Surface*) * BlocNumber);
-
-        DivideIntoBlocs(image,blocs,letters); //Divides image into lines
-
+        DivideIntoBlocs(image,blocs,chars); //Divides image into lines
         char file[12];
-        for (int j = 0; j < BlocNumber; ++j) {
-            for (int i = 0; i < NumberOfLetters(blocs[j]); ++i) {
+        for (int j = 0; j < BlocCount; ++j) {
+            for (int i = 0; i < CountChars(blocs[j]); ++i) {
                 char loc[100] = "img/temp/";
                 sprintf(file,"%i",j*100 + i);
                 strcat(file,".bmp");
-                SDL_SaveBMP(letters[j][i], strcat(loc,file)); //Save blocs in folder
+                SDL_SaveBMP(chars[j][i], strcat(loc,file)); //Save each blocs in a image in a folder
             }
         }
-
-        //SDL_UnlockSurface(image);
-
-        SDL_SaveBMP(image,"segmentation.bmp"); //Save image in folder
-
+        SDL_SaveBMP(image,"segmentation.bmp"); //Save image with red lines in folder
         SDL_Surface* new_image=load_image("segmentation.bmp");
-
         screen_surface = display_image(new_image);
-
         wait_for_keypressed();
-
         SDL_FreeSurface(image);
         SDL_FreeSurface(new_image);
         SDL_FreeSurface(screen_surface);
-
         SDL_Quit();
     }
     else{

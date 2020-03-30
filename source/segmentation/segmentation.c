@@ -1,24 +1,21 @@
 #include "segmentation.h"
 #include "../sdl/our_sdl.h"
+#include <stdio.h>
 
-void DrawLines(SDL_Surface *image) { 
+void DrawRedLines(SDL_Surface *image) { 
     Uint32 pixel;
     Uint8 red;
-
-    int isEmpty;
-
+    char boo; //boo is boolean
     for (int i = 0; i < image->h; i++) {
-        isEmpty = 1;
-
+        boo = 1;
         for (int j = 0; j < image->w; j++) {
             pixel = get_pixel(image, j, i);
             red = getRed(pixel, image->format);
 
             if (red == 0)
-                isEmpty = 0;
+                boo = 0;
         }
-
-        if (isEmpty) {
+        if (boo) {
             for (int j = 0; j < image->w; j++) {
                 put_pixel(image, j, i, SDL_MapRGB(image->format, 128, 0, 0));
             }
@@ -26,153 +23,115 @@ void DrawLines(SDL_Surface *image) {
     }
 }
 
-int NumberOfBlocs(SDL_Surface *image) {
+int CountBlocs(SDL_Surface *image) {
     Uint32 pixel;
     Uint8 red;
-
-    int BlocCount = 0;
-    int isBloc;
-    int blocYmax;
-
+    int Count = 0; //Count each bloc in image
+    char boo; //boo is boolean
+    int Ymax;
     for (int i = 0; i < image->h; i++) {
         pixel = get_pixel(image, 0, i);
         red = getRed(pixel, image->format);
-
         if (red == 0 || red == 255) {
-            isBloc = 1;
-            blocYmax = i;
-
-            while (isBloc && blocYmax < image->h) {
-                blocYmax++;
-
-                pixel = get_pixel(image, 0, blocYmax);
+            boo = 1;
+            Ymax = i;
+            while (boo && Ymax < image->h) {
+                Ymax++;
+                pixel = get_pixel(image, 0, Ymax);
                 red = getRed(pixel, image->format);
-
                 if (red == 128)
-                    isBloc = 0;
+                    boo = 0;
             }
-
-            BlocCount++;
-            i = blocYmax;
+            Count++;
+            i = Ymax;
         }
     }
-    return BlocCount;
+    return Count;
 }
 
-
-void DivideIntoBlocs(SDL_Surface *image, SDL_Surface **blocs, SDL_Surface ***letters) {
-
+void DivideIntoBlocs(SDL_Surface *image, SDL_Surface **blocs, SDL_Surface ***chars) {
     Uint32 pixel;
     Uint8 red;
-
     SDL_Rect bloc;
-    int blocCount = 0;
-    int isBloc;
-    int blocYmin;
-    int blocYmax;
-
-    SDL_Rect letter;
-    int isLetter;
-    int letterXmin;
-    int letterXmax;
-
+    int Count = 0;
+    char boo;
+    int Ymin;
+    int Ymax;
+    SDL_Rect chr;
+    char chrBoo;
+    int Xmin;
+    int Xmax;
     for (int i = 0; i < image->h; i++) {
         pixel = get_pixel(image, 0, i);
         red = getRed(pixel, image->format);
-
         if (red == 0 || red == 255) {
-            isBloc = 1;
-            blocYmin = i;
-            blocYmax = i;
-
-            while (isBloc && blocYmax < image->h) {
-                blocYmax++;
-
-                pixel = get_pixel(image, 0, blocYmax);
+            boo = 1;
+            Ymin = i;
+            Ymax = i;
+            while (boo && Ymax < image->h) {
+                Ymax++;
+                pixel = get_pixel(image, 0, Ymax);
                 red = getRed(pixel, image->format);
-
                 if (red == 128)
-                    isBloc = 0;
+                    boo = 0;
             }
-
             bloc.x = 0;
-            bloc.y = blocYmin;
+            bloc.y = Ymin;
             bloc.w = image->w;
-            bloc.h = blocYmax - blocYmin;
-
+            bloc.h = Ymax - Ymin;
             SDL_UnlockSurface(image);
-            blocs[blocCount] = SDL_CreateRGBSurface(SDL_HWSURFACE, bloc.w, bloc.h, 32, 0, 0, 0, 0);
-            SDL_BlitSurface(image, &bloc, blocs[blocCount], NULL);
+            blocs[Count] = SDL_CreateRGBSurface(SDL_HWSURFACE, bloc.w, bloc.h, 32, 0, 0, 0, 0);
+            SDL_BlitSurface(image, &bloc, blocs[Count], NULL);
             SDL_LockSurface(image);
-
-
-            /*Start of DivideIntoLetters*/
-
-            DrawColumns(blocs[blocCount]);
-            int LettersNumber = NumberOfLetters(blocs[blocCount]);
-            letters[blocCount] = malloc(sizeof(SDL_Surface**) * LettersNumber);
-            int LetterCount = 0;
-
-            for (int i = 0; i < blocs[blocCount]->w; i++) {
-
-                pixel = get_pixel(blocs[blocCount], i,0);
-                red = getRed(pixel, blocs[blocCount]->format);
-
+            /*Start of DivideIntoBlocs*/
+            DrawLinesUp(blocs[Count]);
+            int chrNumber = CountChars(blocs[Count]);
+            chars[Count] = malloc(sizeof(SDL_Surface**) * chrNumber);
+            int chrCount = 0;
+            for (int i = 0; i < blocs[Count]->w; i++) {
+                pixel = get_pixel(blocs[Count], i,0);
+                red = getRed(pixel, blocs[Count]->format);
                 if (red == 0 || red == 255) {
-                    isLetter = 1;
-                    letterXmin = i;
-                    letterXmax = i;
-
-                    while (isLetter && letterXmax < blocs[blocCount]->w) {
-                        letterXmax++;
-
-                        pixel = get_pixel(blocs[blocCount], letterXmax,0);
-                        red = getRed(pixel, blocs[blocCount]->format);
-
+                    chrBoo = 1;
+                    Xmin = i;
+                    Xmax = i;
+                    while (chrBoo && Xmax < blocs[Count]->w) {
+                        Xmax++;
+                        pixel = get_pixel(blocs[Count], Xmax,0);
+                        red = getRed(pixel, blocs[Count]->format);
                         if (red == 128)
-                            isLetter = 0;
+                            chrBoo = 0;
                     }
-
-                    letter.x = letterXmin;
-                    letter.y = 0;
-                    letter.w = letterXmax - letterXmin;
-                    letter.h = blocs[blocCount]->h;
-
-                    SDL_UnlockSurface(blocs[blocCount]);
-                    letters[blocCount][LetterCount] = SDL_CreateRGBSurface(SDL_HWSURFACE, letter.w, letter.h, 32, 0, 0, 0, 0);
-                    SDL_BlitSurface(blocs[blocCount], &letter, letters[blocCount][LetterCount], NULL);
-                    SDL_LockSurface(blocs[blocCount]);
-
-                    LetterCount++;
-                    i = letterXmax;
+                    chr.x = Xmin;
+                    chr.y = 0;
+                    chr.w = Xmax - Xmin;
+                    chr.h = blocs[Count]->h;
+                    SDL_UnlockSurface(blocs[Count]);
+                    chars[Count][chrCount] = SDL_CreateRGBSurface(SDL_HWSURFACE, chr.w, chr.h, 32, 0, 0, 0, 0);
+                    SDL_BlitSurface(blocs[Count], &chr, chars[Count][chrCount], NULL);
+                    SDL_LockSurface(blocs[Count]);
+                    chrCount++;
+                    i = Xmax;
                 }
             }
-
-            blocCount++;
-            i = blocYmax;
+            Count++;
+            i = Ymax;
         }
     }
 }
-
-
-void DrawColumns(SDL_Surface *image) {
+void DrawLinesUp(SDL_Surface *image) {
     Uint32 pixel;
     Uint8 red;
-
-    int isEmpty;
-
+    char boo;
     for (int i = 0; i < image->w; i++) {
-        isEmpty = 1;
-
+        boo = 1;
         for (int j = 0; j < image->h; j++) {
             pixel = get_pixel(image, i, j);
             red = getRed(pixel, image->format);
-
             if (red == 0)
-                isEmpty = 0;
+                boo = 0;
         }
-
-        if (isEmpty) {
+        if (boo) {
             for (int j = 0; j < image->h; j++) {
                 put_pixel(image, i, j, SDL_MapRGB(image->format, 128, 0, 0));
             }
@@ -180,35 +139,28 @@ void DrawColumns(SDL_Surface *image) {
     }
 }
 
-int NumberOfLetters(SDL_Surface *bloc) {
+int CountChars(SDL_Surface *bloc) {
     Uint32 pixel;
     Uint8 red;
-
-    int letterCount = 0;
-    int isLetter;
-    int LetterXmax;
-
+    int count = 0;
+    char boo;
+    int Xmax;
     for (int i = 0; i < bloc->w; i++) {
         pixel = get_pixel(bloc, i,0);
         red = getRed(pixel, bloc->format);
-
         if (red == 0 || red == 255) {
-            isLetter = 1;
-            LetterXmax = i;
-
-            while (isLetter && LetterXmax < bloc->w) {
-                LetterXmax++;
-
-                pixel = get_pixel(bloc, LetterXmax, 0);
+            boo = 1;
+            Xmax = i;
+            while (boo && Xmax < bloc->w) {
+                Xmax++;
+                pixel = get_pixel(bloc, Xmax, 0);
                 red = getRed(pixel, bloc->format);
-
                 if (red == 128)
-                    isLetter = 0;
+                    boo = 0;
             }
-
-            letterCount++;
-            i = LetterXmax;
+            count++;
+            i = Xmax;
         }
     }
-    return letterCount;
+    return count;
 }
