@@ -12,15 +12,17 @@ SRC= main.c source/process/process.c source/sdl/our_sdl.c source/segmentation/se
 OBJ= $(SRC:.c=.o)
 DEP= $(SRC:.c=.d)
 
-all: main 
+all: main create
 
-main: $(OBJ)
+create: 
 	[ -d "source/Xor" ] || mkdir source/Xor
 	[ -d "img/temp" ] || mkdir img/temp
 	touch source/Xor/Xor-data.txt
 	touch source/Xor/Xor-weights.txt
 
+main: $(OBJ)
+
 clean:
 	$(RM) $(OBJ) $(OBJ_TESTS) $(DEP) $(DEP_TESTS) main && clear
 	rm -f *.bmp ; rm -f img/temp/*.bmp ; rm -f source/Xor/Xor-*
-# END
+# END 
