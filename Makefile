@@ -1,5 +1,7 @@
 # OCR_Gang's Makefile
 #Author : marius.andre
+# OCR_Gang's Makefile
+#Author : marius.andre
 
 CC=gcc
 
@@ -15,9 +17,12 @@ DEP= $(SRC:.c=.d)
 all: main 
 
 main: $(OBJ)
+	[ -d "source/Xor" ] || mkdir source/Xor
+	[ -d "img/temp" ] || mkdir img/temp
+	touch source/Xor/Xor-data.txt
+	touch source/Xor/Xor-weights.txt
 
 clean:
 	$(RM) $(OBJ) $(OBJ_TESTS) $(DEP) $(DEP_TESTS) main && clear
-	rm -f *.bmp
-	rm img/temp/*.bmp
+	rm -f *.bmp ; rm -f img/temp/*.bmp ; rm -f source/Xor/Xor-*
 # END
