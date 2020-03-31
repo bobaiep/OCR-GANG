@@ -1,7 +1,5 @@
 # OCR_Gang's Makefile
 #Author : marius.andre
-# OCR_Gang's Makefile
-#Author : marius.andre
 
 CC=gcc
 
