@@ -33,7 +33,7 @@ struct neurons
 
 // Initialize a new neural network
 struct network* InitializeNetwork();
-struct layer* InitializeLayer(struct network *net);
+struct layer* InitializeLayer(size_t nb);
 struct neurons* InitializeNeurons();
 
 void ForwardPass(struct network *net);
