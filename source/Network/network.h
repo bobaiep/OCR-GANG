@@ -7,20 +7,15 @@ struct network {
     size_t nbHidden;
     size_t nbOutput;
 
-    struct layer *input;
-    struct layer *hidden;
-    struct layer *output;
+    struct neurons *input;
+    struct neurons *hidden;
+    struct neurons *output;
 
     double MaxErrorRate;
     double ErrorRate;
     double eta;
     double alpha;
     char alphabet[52];
-};
-
-struct layer
-{
-    struct neurons *data;  
 };
 
 struct neurons
@@ -33,8 +28,8 @@ struct neurons
 
 // Initialize a new neural network
 struct network* InitializeNetwork();
-struct layer* InitializeLayer(size_t nb);
-struct neurons* InitializeNeurons();
+struct neurons* InitializeLayer(size_t nb);
+struct neurons InitializeNeurons();
 
 void ForwardPass(struct network *net);
 void BackwardPropagation(struct network *net);

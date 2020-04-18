@@ -37,20 +37,20 @@ struct network* InitializeNetwork(){
 }
 
 //Intialize a new network
-struct layer* InitializeLayer(size_t nb){
-    struct layer *layer = calloc(nb, sizeof(struct layer));
+struct neurons* InitializeLayer(size_t nb){
+    struct neurons *layer = calloc(nb, sizeof(struct neurons));
     if (layer == NULL){
         errx(1, "Not enough memory!");
     }
     for (size_t i = 0 ; i < nb ; i++)
     {
-        layer -> data = InitializeNeurons();
+        layer[i] = InitializeNeurons();
     }
     return layer;
 }
 
 //Intialize a new network
-struct neurons* InitializeNeurons(){
+struct neurons InitializeNeurons(){
     struct neurons *neuron = malloc(sizeof(struct neurons));
     if (neuron == NULL){
         errx(1, "Not enough memory!");
@@ -59,7 +59,7 @@ struct neurons* InitializeNeurons(){
     neuron -> weight = init_weight();
     neuron -> biais = init_weight();
     neuron -> next = NULL;
-    return neuron;
+    return *neuron;
 }
 
 void ForwardPass(struct network *net)
