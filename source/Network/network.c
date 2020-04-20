@@ -7,7 +7,11 @@
 int main() {
     struct network* net = InitializeNetwork();
     printf("initialization finished\n");
+    printf("feed forward ...\n");
+    ForwardPass(net);
+    printf("feed forward ok !\n");
     free(net);
+    return 0;
 }
 
 //Intialize a new network
@@ -22,7 +26,7 @@ struct network* InitializeNetwork(){
     network -> nbInput = 28*28; // Dimension des images données par la segmentation, a voir avec Marius
     network -> nbHidden = 20; // Arbitraire clairement
     network -> nbOutput = 52; // nb de lettres dans l'alphabet *2
-    network -> input = InitializeLayer(network -> nbInput);
+    network -> input = calloc(network -> nbInput, sizeof(struct neurons));
     network -> hidden = InitializeLayer(network -> nbHidden);
     network -> output = InitializeLayer(network -> nbOutput);
     if (network-> input == NULL || network->hidden == NULL || network -> output == NULL){
@@ -58,13 +62,37 @@ struct neurons InitializeNeurons(){
     neuron -> activation = init_weight(); //Fonction random()
     neuron -> weight = init_weight();
     neuron -> biais = init_weight();
-    neuron -> next = NULL;
+    neuron -> delta = 0.0;
     return *neuron;
 }
 
 void ForwardPass(struct network *net)
 {
-  // TODO
+    double activation;
+
+    for (size_t i = 0; i < net-> nbHidden; i++)
+    {
+        double activation = net->hidden[i].biais;
+        for (size_t j = 0; j < net -> nbInput; j++)
+        {
+            activation += net->input[i*net->nbHidden+j] *net->hidden[i*net -> nbHidden+j].weight;
+        }
+        net->hidden[i].activation = sigmoid(activation);
+    }
+    for (size_t j = 0; j < net->nbOutput; j++)
+    {
+        double activation = net->output[j].biais;
+        for (size_t k = 0; k < net->nbHidden; k++)
+        {
+            activation += net->hidden[k].activation*net->output[j*net->nbOutput+k].weight;
+        }
+        net->output[j].activation = sigmoid(activation);
+    }
+    
+}
+
+/*char GetAnswer(struct network *net){
+
 }
 
 void BackwardPropagation(struct network *net)
@@ -81,3 +109,4 @@ void UpdateBiases(struct network *net)
 {
   //TODO
 }
+*/

@@ -7,7 +7,7 @@ struct network {
     size_t nbHidden;
     size_t nbOutput;
 
-    struct neurons *input;
+    double *input;
     struct neurons *hidden;
     struct neurons *output;
 
@@ -23,7 +23,7 @@ struct neurons
     double activation;
     double weight;
     double biais;
-    struct neurons *next;    
+    double delta;   
 };
 
 // Initialize a new neural network
