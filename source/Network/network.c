@@ -10,6 +10,8 @@ int main() {
     printf("feed forward ...\n");
     ForwardPass(net);
     printf("feed forward ok !\n");
+    BackwardPropagation(net);
+    printf("back propagation ok ! \n");
     free(net);
     return 0;
 }
@@ -93,14 +95,28 @@ void ForwardPass(struct network *net)
 
 /*char GetAnswer(struct network *net){
 
-}
+}*/
 
 void BackwardPropagation(struct network *net)
 {
-  //TODO
+  for (size_t o = 0; o < net -> nbOutput; o++)
+  {
+    net -> output[o].delta = (/*net -> goal[o] -*/ net -> output[o].activation) * dSigmoid(net -> output[o].activation);
+  }
+
+  double sum;
+  for (size_t h = 0; h < net -> nbHidden; h++)
+  {
+    sum = 0.0;
+    for (size_t o = 0; o < net -> nbOutput; o++)
+    {
+      sum += net->hidden[h*net->nbHidden+o].weight * net->output[o].delta;
+    }
+    net -> hidden[h].delta = sum * dSigmoid(net->hidden[h].activation);
+  }
 }
 
-void UpdateWeights(struct network *net)
+/*void UpdateWeights(struct network *net)
 {
   //TODO
 }
