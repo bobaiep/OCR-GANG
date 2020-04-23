@@ -15,7 +15,6 @@ struct network {
     double ErrorRate;
     double eta;
     double alpha;
-    char alphabet[52];
 };
 
 struct neurons
@@ -35,5 +34,4 @@ void ForwardPass(struct network *net);
 void BackwardPropagation(struct network *net);
 void UpdateWeights(struct network *net);
 void UpdateBiases(struct network *net);
-
 #endif

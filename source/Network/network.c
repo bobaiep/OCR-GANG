@@ -4,7 +4,7 @@
 #include "network.h"
 #include "tools.h" 
 
-int main() {
+/*int main() {
     struct network* net = InitializeNetwork();
     printf("initialization finished\n");
     printf("feed forward ...\n");
@@ -12,9 +12,10 @@ int main() {
     printf("feed forward ok !\n");
     BackwardPropagation(net);
     printf("back propagation ok ! \n");
+    printf("Answer of nn : %c",RetrieveChar(PosAnswer(net)));
     free(net);
     return 0;
-}
+}*/
 
 //Intialize a new network
 struct network* InitializeNetwork(){
@@ -23,8 +24,6 @@ struct network* InitializeNetwork(){
     if (network == NULL){
         errx(1, "Not enough memory!");
     }
-    /*network -> alphabet = {'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z',\
-                            'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z'};*/
     network -> nbInput = 28*28; // Dimension des images données par la segmentation, a voir avec Marius
     network -> nbHidden = 20; // Arbitraire clairement
     network -> nbOutput = 52; // nb de lettres dans l'alphabet *2
@@ -70,8 +69,6 @@ struct neurons InitializeNeurons(){
 
 void ForwardPass(struct network *net)
 {
-    double activation;
-
     for (size_t i = 0; i < net-> nbHidden; i++)
     {
         double activation = net->hidden[i].biais;
@@ -92,10 +89,6 @@ void ForwardPass(struct network *net)
     }
     
 }
-
-/*char GetAnswer(struct network *net){
-
-}*/
 
 void BackwardPropagation(struct network *net)
 {

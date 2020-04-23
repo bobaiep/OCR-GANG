@@ -16,4 +16,6 @@ float expo(float x);
 // No arguments required
 double init_weight();
 
+size_t PosAnswer(struct network *net);
+char RetrieveChar(size_t val);
 #endif
