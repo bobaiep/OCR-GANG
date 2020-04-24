@@ -22,7 +22,8 @@ struct neurons
     double activation;
     double weight;
     double biais;
-    double delta;   
+    double delta;
+    double deltaweight;
 };
 
 // Initialize a new neural network

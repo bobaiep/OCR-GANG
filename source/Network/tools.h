@@ -14,7 +14,7 @@ float expo(float x);
 
 // Init all weights and biases between 0.0 and 1.0
 // No arguments required
-double init_weight();
+double random();
 
 size_t PosAnswer(struct network *net);
 char RetrieveChar(size_t val);

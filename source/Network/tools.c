@@ -27,7 +27,7 @@ double dSigmoid(double x)
 }
 
 // Init all weights and biases between 0.0 and 1.0
-double init_weight() 
+double random() 
 { 
     return ((double)rand())/((double)RAND_MAX+1);
 }

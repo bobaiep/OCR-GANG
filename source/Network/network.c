@@ -4,18 +4,24 @@
 #include "network.h"
 #include "tools.h" 
 
-/*int main() {
+int main() {
     struct network* net = InitializeNetwork();
     printf("initialization finished\n");
-    printf("feed forward ...\n");
-    ForwardPass(net);
-    printf("feed forward ok !\n");
-    BackwardPropagation(net);
-    printf("back propagation ok ! \n");
-    printf("Answer of nn : %c",RetrieveChar(PosAnswer(net)));
+    for (size_t i = 0; i < 4900; i++)
+    {
+        printf("feed forward ...\n");
+        ForwardPass(net);
+        printf("feed forward ok !\n");
+        BackwardPropagation(net);
+        printf("back propagation ok ! \n");
+        printf("Answer of nn : %c\n",RetrieveChar(PosAnswer(net)));
+        UpdateBiases(net);
+        printf("updated biases !\n");
+        UpdateWeights(net);
+    }
     free(net);
     return 0;
-}*/
+}
 
 //Intialize a new network
 struct network* InitializeNetwork(){
@@ -60,10 +66,11 @@ struct neurons InitializeNeurons(){
     if (neuron == NULL){
         errx(1, "Not enough memory!");
     }
-    neuron -> activation = init_weight(); //Fonction random()
-    neuron -> weight = init_weight();
-    neuron -> biais = init_weight();
+    neuron -> activation = random(); //Fonction random()
+    neuron -> weight = random();
+    neuron -> biais = random();
     neuron -> delta = 0.0;
+    neuron -> deltaweight = 0.0;
     return *neuron;
 }
 
@@ -83,7 +90,7 @@ void ForwardPass(struct network *net)
         double activation = net->output[j].biais;
         for (size_t k = 0; k < net->nbHidden; k++)
         {
-            activation += net->hidden[k].activation*net->output[j*net->nbOutput+k].weight;
+            activation += net->hidden[k].activation*net->output[k*net->nbOutput+j].weight;
         }
         net->output[j].activation = sigmoid(activation);
     }
@@ -109,13 +116,32 @@ void BackwardPropagation(struct network *net)
   }
 }
 
-/*void UpdateWeights(struct network *net)
+void UpdateWeights(struct network *net)
 {
-  //TODO
+    for (size_t h = 0; h < net -> nbHidden; h++)
+    {
+        for(size_t i = 0; i < net -> nbInput; i++)
+        {
+            double output = net -> input[i];
+            double error = net -> hidden[h*net->nbHidden+i].delta;
+            double dWeight = net -> hidden[h*net->nbHidden+i].deltaweight;
+
+            net -> hidden[h*net->nbHidden+i].weight += net->eta * net->hidden[h*net->nbHidden+i].delta * net->input[i] + net->alpha * dWeight;
+            net -> hidden[h*net->nbHidden+i].deltaweight = net->eta * net->hidden[h*net->nbHidden+i].delta * output;
+        }
+    }
 }
 
 void UpdateBiases(struct network *net)
 {
-  //TODO
+    for (size_t h = 0; h < net -> nbHidden; h++)
+    {
+        net -> hidden[h].biais += net->eta * net -> hidden[h].delta;
+    }
+
+    //Update BiasO
+    for (size_t o = 0; o < net -> nbOutput; o++)
+    {
+        net -> output[o].biais += net->eta * net-> output[o].delta;
+    }
 }
-*/
