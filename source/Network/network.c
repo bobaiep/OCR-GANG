@@ -15,9 +15,8 @@ int main() {
         BackwardPropagation(net);
         printf("back propagation ok ! \n");
         printf("Answer of nn : %c\n",RetrieveChar(PosAnswer(net)));
-        UpdateBiases(net);
-        printf("updated biases !\n");
-        UpdateWeights(net);
+        UpdateWeightsBiases(net);
+        printf("updated weight and biases !\n");
     }
     free(net);
     return 0;
@@ -104,10 +103,9 @@ void BackwardPropagation(struct network *net)
     net -> output[o].delta = (/*net -> goal[o] -*/ net -> output[o].activation) * dSigmoid(net -> output[o].activation);
   }
 
-  double sum;
   for (size_t h = 0; h < net -> nbHidden; h++)
   {
-    sum = 0.0;
+    double sum = 0.0;
     for (size_t o = 0; o < net -> nbOutput; o++)
     {
       sum += net->hidden[h*net->nbHidden+o].weight * net->output[o].delta;
@@ -116,32 +114,28 @@ void BackwardPropagation(struct network *net)
   }
 }
 
-void UpdateWeights(struct network *net)
+void UpdateWeightsBiases(struct network *net)
 {
+    // Weights and biases for hidden layer
     for (size_t h = 0; h < net -> nbHidden; h++)
     {
+        net -> hidden[h].biais += net->eta * net -> hidden[h].delta;
         for(size_t i = 0; i < net -> nbInput; i++)
         {
-            double output = net -> input[i];
-            double error = net -> hidden[h*net->nbHidden+i].delta;
-            double dWeight = net -> hidden[h*net->nbHidden+i].deltaweight;
+            net -> hidden[h*net->nbHidden+i].weight += net->eta * net->hidden[h*net->nbHidden+i].delta * net->input[i] + net->alpha * net -> hidden[h*net->nbHidden+i].deltaweight;
+            net -> hidden[h*net->nbHidden+i].deltaweight = net->eta * net->hidden[h*net->nbHidden+i].delta * net -> input[i];
+        }
+    }
 
-            net -> hidden[h*net->nbHidden+i].weight += net->eta * net->hidden[h*net->nbHidden+i].delta * net->input[i] + net->alpha * dWeight;
-            net -> hidden[h*net->nbHidden+i].deltaweight = net->eta * net->hidden[h*net->nbHidden+i].delta * output;
+    // Weights and biases for output layer
+    for (size_t o = 0; o < net -> nbOutput; o++)
+    {
+        net -> output[o].biais += net->eta * net-> output[o].delta;
+        for (size_t h = 0; h < net -> nbHidden; h++)
+        {
+            net -> output[h*net->nbOutput+o].weight += net-> eta * net->output[h*net->nbOutput+o].delta * net->hidden[h].activation + net ->alpha * net -> output[h*net->nbOutput+o].deltaweight;
+            net -> output[h*net->nbOutput+o].deltaweight = net->eta * net -> output[h*net->nbOutput+o].delta * net -> hidden[h].activation;
         }
     }
 }
 
-void UpdateBiases(struct network *net)
-{
-    for (size_t h = 0; h < net -> nbHidden; h++)
-    {
-        net -> hidden[h].biais += net->eta * net -> hidden[h].delta;
-    }
-
-    //Update BiasO
-    for (size_t o = 0; o < net -> nbOutput; o++)
-    {
-        net -> output[o].biais += net->eta * net-> output[o].delta;
-    }
-}

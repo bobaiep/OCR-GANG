@@ -57,8 +57,8 @@ int main(int argc, char** argv) {
     else{
         if(strcmp(argv[1], "--XOR")==0){
             /* Declare all we are gonna need */
-            static const int number_of_inputs = 784;
-            static const int number_of_hidden_nodes = 20;
+            static const int number_of_inputs = 2;
+            static const int number_of_hidden_nodes = 4;
             static const int number_of_outputs = 1;
             double hidden_layer[number_of_hidden_nodes];
             double output_layer[number_of_outputs];
@@ -84,7 +84,7 @@ int main(int argc, char** argv) {
                 hidden_weights,hidden_layer_bias,output_weights);
             }
             printf("Finished all initialization !\n");
-            /*char answer[1];
+            char answer[1];
             printf("Do you want to train the neural network or use it ?\n1 = Train it\n2 = Use it\n");
             fgets(answer,2,stdin);
             if (atoi(&answer[0])== 1)

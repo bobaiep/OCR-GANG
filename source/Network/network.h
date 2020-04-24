@@ -33,6 +33,5 @@ struct neurons InitializeNeurons();
 
 void ForwardPass(struct network *net);
 void BackwardPropagation(struct network *net);
-void UpdateWeights(struct network *net);
-void UpdateBiases(struct network *net);
+void UpdateWeightsBiases(struct network *net);
 #endif
