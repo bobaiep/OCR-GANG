@@ -6,6 +6,7 @@
 #include "source/process/process.h"
 #include "source/nn/nn.h"
 #include "source/Network/network.h"
+#include "source/Network/tools.h"
 #include "err.h"
 
 int main(int argc, char** argv) {
@@ -121,8 +122,8 @@ int main(int argc, char** argv) {
                 char input2[1];
                 printf("Please input the value you want to enter.\n");
                 fgets(input1,2,stdin);
-                fgets(input2,2,stdin);
-            }*/
+                fgets(input2,2,stdin);*/
+            }
             
         }
         else{

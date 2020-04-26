@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include "network.h"
 
-float expo(float x) // Self explanitory, just in case cannot use math.h
+float exponential(float x) // Self explanitory, just in case cannot use math.h
 { 
     float sum = 1.0f;
     int n = 150; // Arbitrary
@@ -15,19 +15,19 @@ float expo(float x) // Self explanitory, just in case cannot use math.h
 
 // Activation function and its derivative
 
-double sigmoid(double x)
+double fsigmoid(double x)
 {
-    return 1 / (1 + expo(-x)); 
+    return 1 / (1 + exponential(-x)); 
     // Will be used to adjust the activation of hiddenlayer and outputlayer nodes
 }
-double dSigmoid(double x)
+double derivatesigmoid(double x)
 { 
     return x * (1 - x); 
     // Will be used to compute the weigth of hiddenlayer and outputlayer nodes
 }
 
 // Init all weights and biases between 0.0 and 1.0
-double random() 
+double initneuron()
 { 
     return ((double)rand())/((double)RAND_MAX+1);
 }

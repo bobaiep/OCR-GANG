@@ -4,23 +4,23 @@
 #include "network.h"
 #include "tools.h" 
 
-int main() {
+/*int main() {
     struct network* net = InitializeNetwork();
-    printf("initialization finished\n");
+    //printf("initialization finished\n");
     for (size_t i = 0; i < 4900; i++)
     {
-        printf("feed forward ...\n");
+        //printf("feed forward ...\n");
         ForwardPass(net);
-        printf("feed forward ok !\n");
+        //printf("feed forward ok !\n");
         BackwardPropagation(net);
-        printf("back propagation ok ! \n");
-        printf("Answer of nn : %c\n",RetrieveChar(PosAnswer(net)));
+        //printf("back propagation ok ! \n");
+        //printf("Answer of nn : %c\n",RetrieveChar(PosAnswer(net)));
         UpdateWeightsBiases(net);
-        printf("updated weight and biases !\n");
+        //printf("updated weight and biases !\n");
     }
     free(net);
     return 0;
-}
+}*/
 
 //Intialize a new network
 struct network* InitializeNetwork(){
@@ -65,9 +65,9 @@ struct neurons InitializeNeurons(){
     if (neuron == NULL){
         errx(1, "Not enough memory!");
     }
-    neuron -> activation = random(); //Fonction random()
-    neuron -> weight = random();
-    neuron -> biais = random();
+    neuron -> activation = initneuron(); //Fonction random()
+    neuron -> weight = initneuron();
+    neuron -> biais = initneuron();
     neuron -> delta = 0.0;
     neuron -> deltaweight = 0.0;
     return *neuron;
@@ -82,7 +82,7 @@ void ForwardPass(struct network *net)
         {
             activation += net->input[i*net->nbHidden+j] *net->hidden[i*net -> nbHidden+j].weight;
         }
-        net->hidden[i].activation = sigmoid(activation);
+        net->hidden[i].activation = fsigmoid(activation);
     }
     for (size_t j = 0; j < net->nbOutput; j++)
     {
@@ -91,7 +91,7 @@ void ForwardPass(struct network *net)
         {
             activation += net->hidden[k].activation*net->output[k*net->nbOutput+j].weight;
         }
-        net->output[j].activation = sigmoid(activation);
+        net->output[j].activation = fsigmoid(activation);
     }
     
 }
@@ -100,7 +100,7 @@ void BackwardPropagation(struct network *net)
 {
   for (size_t o = 0; o < net -> nbOutput; o++)
   {
-    net -> output[o].delta = (/*net -> goal[o] -*/ net -> output[o].activation) * dSigmoid(net -> output[o].activation);
+    net -> output[o].delta = (/*net -> goal[o] -*/ net -> output[o].activation) * derivatesigmoid(net -> output[o].activation);
   }
 
   for (size_t h = 0; h < net -> nbHidden; h++)
@@ -110,7 +110,7 @@ void BackwardPropagation(struct network *net)
     {
       sum += net->hidden[h*net->nbHidden+o].weight * net->output[o].delta;
     }
-    net -> hidden[h].delta = sum * dSigmoid(net->hidden[h].activation);
+    net -> hidden[h].delta = sum * derivatesigmoid(net->hidden[h].activation);
   }
 }
 
