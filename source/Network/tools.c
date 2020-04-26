@@ -1,6 +1,7 @@
 #include <stdio.h> 
 #include <stdlib.h>
 #include "network.h"
+#include <err.h>
 
 float exponential(float x) // Self explanitory, just in case cannot use math.h
 { 
@@ -30,6 +31,43 @@ double derivatesigmoid(double x)
 double initneuron()
 { 
     return ((double)rand())/((double)RAND_MAX+1);
+}
+
+void savenetwork(struct network *net){
+  FILE *output;
+  FILE *hidden;
+  printf("pointer initialized\n");
+  output = fopen("source/Network/outputwb.txt","w");
+  hidden = fopen("source/Network/hiddenwb.txt","w");
+  for (size_t o = 0; o < net -> nbOutput; o++)
+  {
+    fprintf(output,"%f %f %f %f %f\n",net->output[o].activation,net->output[o].weight,net->output[o].biais,net->output[o].delta,net->output[o].deltaweight);
+  }
+  for (size_t o = 0; o < net -> nbHidden; o++)
+  {
+    fprintf(hidden,"%f %f %f %f %f\n",net->hidden[o].activation,net->hidden[o].weight,net->hidden[o].biais,net->hidden[o].delta,net->hidden[o].deltaweight);
+  }
+  fclose(output);
+  fclose(hidden);
+}
+
+void loadnetwork(struct network *net){
+  FILE *hidden = fopen("source/Network/hiddenwb.txt","r");
+  FILE *output = fopen("source/Network/outputwb.txt","r");
+  if (hidden == NULL || output == NULL)
+  {
+    errx(1,"It seems that there was a problem with the loading of the neural network, oups..\n");
+  }
+  for (size_t o = 0; o < net->nbHidden; o++)
+  {
+    fscanf(hidden,"%lf %lf %lf %lf %lf",&net->hidden[o].activation,&net->hidden[o].weight,&net->hidden[o].biais,&net->hidden[o].delta,&net->hidden[o].deltaweight);
+  }
+  for (size_t o = 0; o < net->nbOutput; o++)
+  {
+    fscanf(output,"%lf %lf %lf %lf %lf",&net->output[o].activation,&net->output[o].weight,&net->output[o].biais,&net->output[o].delta,&net->output[o].deltaweight);
+  }
+  fclose(hidden);
+  fclose(output);
 }
 
 size_t PosAnswer(struct network *net){

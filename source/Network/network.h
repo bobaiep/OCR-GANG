@@ -27,7 +27,7 @@ struct neurons
 };
 
 // Initialize a new neural network
-struct network* InitializeNetwork();
+struct network* InitializeNetwork(double i, double h, double o);
 struct neurons* InitializeLayer(size_t nb);
 struct neurons InitializeNeurons();
 

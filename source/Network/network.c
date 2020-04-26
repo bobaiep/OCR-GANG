@@ -5,7 +5,8 @@
 #include "tools.h" 
 
 /*int main() {
-    struct network* net = InitializeNetwork();
+    struct network* net = InitializeNetwork(28,20,52);
+    //loadnetwork(net);
     //printf("initialization finished\n");
     for (size_t i = 0; i < 4900; i++)
     {
@@ -23,15 +24,15 @@
 }*/
 
 //Intialize a new network
-struct network* InitializeNetwork(){
+struct network* InitializeNetwork(double i, double h, double o){
 
     struct network *network = malloc(sizeof(struct network));
     if (network == NULL){
         errx(1, "Not enough memory!");
     }
-    network -> nbInput = 28*28; // Dimension des images données par la segmentation, a voir avec Marius
-    network -> nbHidden = 20; // Arbitraire clairement
-    network -> nbOutput = 52; // nb de lettres dans l'alphabet *2
+    network -> nbInput = i*i; // Dimension des images données par la segmentation, a voir avec Marius
+    network -> nbHidden = h; // Arbitraire clairement
+    network -> nbOutput = o; // nb de lettres dans l'alphabet *2
     network -> input = calloc(network -> nbInput, sizeof(struct neurons));
     network -> hidden = InitializeLayer(network -> nbHidden);
     network -> output = InitializeLayer(network -> nbOutput);

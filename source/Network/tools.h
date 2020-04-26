@@ -16,6 +16,12 @@ float exponential(float x);
 // No arguments required
 double initneuron();
 
+// Saves the weights, biases and deltas of the neural network
+void savenetwork(struct network *net);
+
+// Load the neural network with weights, biases and deltas saved previously
+void loadnetwork(struct network *net);
+
 size_t PosAnswer(struct network *net);
 char RetrieveChar(size_t val);
 #endif
