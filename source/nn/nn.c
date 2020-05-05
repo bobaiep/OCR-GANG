@@ -14,13 +14,20 @@ struct network* InitializeNetwork(double i, double h, double o){
   network-> number_of_inputs = i;
   network-> number_of_hidden_nodes = h;
   network-> number_of_outputs = o;
+  network->input_layer = calloc(network->number_of_inputs,sizeof(double));
   network->hidden_layer = calloc(network->number_of_hidden_nodes,sizeof(double));
+  network-> delta_hidden = calloc(network ->number_of_hidden_nodes,sizeof(double));
   network->hidden_layer_bias = calloc(network->number_of_hidden_nodes,sizeof(double));
   network->hidden_weights = calloc(network->number_of_inputs * network->number_of_hidden_nodes,sizeof(double));
+  network->delta_hidden_weights = calloc(network->number_of_inputs * network->number_of_hidden_nodes,sizeof(double));
   network->output_layer = calloc(network->number_of_outputs,sizeof(double));
+  network-> delta_output = calloc(network -> number_of_outputs,sizeof(double));
   network->output_layer_bias = calloc(network->number_of_outputs,sizeof(double));
   network->output_weights = calloc(network->number_of_hidden_nodes * network->number_of_outputs,sizeof(double));
-  network->lr = 0.2f;
+  network->delta_output_weights = calloc(network->number_of_hidden_nodes * network->number_of_outputs,sizeof(double));
+  network->goal = calloc(network->number_of_outputs,sizeof(double));
+  network->eta = 0.5f;
+  network -> alpha = 0.9f;
 
   if(!fileempty("source/Xor/Xor-weights.txt"))
   {
@@ -52,17 +59,16 @@ void initialization(struct network *net){
     }
 }
 
-int forward_pass(int x ,struct network *net,int trainingSetOrder[],\
-  double training_inputs[]){
+void forward_pass(struct network *net){
     /*DONE : Foward pass = actually input some value into
     the neural network and see what we obtain out of it*/
-    int i = trainingSetOrder[x]; // Select a random tuple
+
     for (int j=0; j< net -> number_of_hidden_nodes; j++)
     {
         double activation= net ->hidden_layer_bias[j];
         for (int k=0; k< net ->number_of_inputs; k++)
         {
-          activation+=training_inputs[i* net ->number_of_inputs+k]*net ->hidden_weights[k*net ->number_of_hidden_nodes+j];
+          activation+=net->input_layer[k]*net ->hidden_weights[k*net ->number_of_hidden_nodes+j];
         }
         net ->hidden_layer[j] = sigmoid(activation);
     }
@@ -75,42 +81,97 @@ int forward_pass(int x ,struct network *net,int trainingSetOrder[],\
         }
         net ->output_layer[j] = sigmoid(activation);
     }
-    return i;
 }
 
-void back_propagation(struct network *net, int i,double training_inputs[],double training_outputs[]){
+void back_propagation(struct network *net){
     /*DONE : Back propagation = update the weight according to
     what we should have obtained out of the neural network*/
-    double deltaOutput[net ->number_of_inputs];
-    for (int j=0; j<net ->number_of_outputs; j++)
+    double output, derivate, goal, error;
+    for (int o=0; o<net ->number_of_outputs; o++)
     {
-        double errorOutput = (training_outputs[i*net ->number_of_outputs+j]-net ->output_layer[j]);
-        deltaOutput[j] = errorOutput*dSigmoid(net ->output_layer[j]);
+        output = net -> output_layer[o];
+        derivate = dSigmoid(output);
+        goal = net -> goal[o];
+        error = (goal - output) * derivate;
+
+        net->delta_output[o] = error;
     }
-    double deltaHidden[net ->number_of_hidden_nodes];
-    for (int j=0; j<net ->number_of_hidden_nodes; j++)
+    double sum, weight, delta;
+    for (int h = 0; h < net -> number_of_hidden_nodes; h++)
     {
-        double errorHidden = 0.0f;
-        for(int k=0; k<net ->number_of_inputs; k++)
+        sum = 0.0;
+        for (int o = 0; o < net -> number_of_outputs; o++)
         {
-            errorHidden+=deltaOutput[k]*net ->output_weights[j*net ->number_of_hidden_nodes+k];
+            weight = net -> output_weights[h*net->number_of_outputs + o];
+            delta = net->delta_output[o];
+
+            sum += weight * delta;
         }
-        deltaHidden[j] = errorHidden*dSigmoid(net ->hidden_layer[j]);
+        output = net -> hidden_layer[h];
+        derivate = dSigmoid(output);
+        net->delta_hidden[h] = sum * derivate;
+
     }
-    for (int j=0; j< net ->number_of_outputs; j++)
+}
+
+void updateweights(struct network *net){
+
+    double eta, alpha, error, output, dWeight;
+    eta = net -> eta;
+    alpha = net -> alpha;
+
+    //Weights between Input and Hidden layers
+    for (int h = 0; h < net -> number_of_hidden_nodes; h++)
     {
-        net ->output_layer_bias[j] += deltaOutput[j]*net->lr;
-        for (int k=0; k< net ->number_of_hidden_nodes; k++)
+        for(int i = 0; i < net -> number_of_inputs; i++)
         {
-            net ->output_weights[k+j*net ->number_of_hidden_nodes]+= net ->hidden_layer[k]*deltaOutput[j]*net ->lr;
+            output = net -> input_layer[i];
+            error = net -> delta_hidden[h];
+            dWeight = net -> delta_hidden_weights[i*net -> number_of_hidden_nodes+h];
+
+            net -> hidden_weights[i*net -> number_of_hidden_nodes+h] += eta * error * output +
+                                        alpha * dWeight;
+            net -> delta_hidden_weights[i*net -> number_of_hidden_nodes+h] = eta * error * output;
         }
     }
-    for(int w = 0;w < net ->number_of_hidden_nodes;w++)
+
+    //Weights between Hidden and Ouput layers
+    for (int o = 0; o < net -> number_of_outputs; o++)
     {
-        net ->hidden_layer_bias[w] += deltaHidden[w]*net ->lr;
-        for(int k=0; k<net ->number_of_inputs; k++)
+        for (int h = 0; h < net -> number_of_hidden_nodes; h++)
         {
-            net ->hidden_weights[k*net ->number_of_inputs+w] += net ->lr*training_inputs[i*net ->number_of_inputs+k]* deltaHidden[w];
+            output = net -> hidden_layer[h];
+            error = net -> delta_output[o];
+            dWeight = net -> delta_output_weights[h*net -> number_of_outputs+o];
+
+            net -> output_weights[h*net -> number_of_outputs+o] += eta * error * output +
+                                        alpha * dWeight;
+            net -> delta_output_weights[h*net -> number_of_outputs+o] = eta * error * output;
         }
     }
+}
+
+void UpdateBiases(struct network *net)
+{
+  double eta, delta, dBias;
+  eta = net -> eta;
+
+  //Update BiasH
+  for (int h = 0; h < net -> number_of_hidden_nodes; h++)
+  {
+    delta = net -> delta_hidden[h];
+    dBias = eta * delta;
+
+    net -> hidden_layer_bias[h] += dBias;
+  }
+
+  //Update BiasO
+  for (int o = 0; o < net -> number_of_outputs; o++)
+  {
+    delta = net -> delta_output[o];
+    dBias = eta * delta;
+
+    net -> output_layer_bias[o] += dBias;
+  }
+
 }

@@ -38,7 +38,7 @@ int main(int argc, char** argv) {
         SDL_SaveBMP(image,"segmentation.bmp"); //Save image in folder
         for (int j = 0; j < BlocCount; ++j) {
             SDL_FreeSurface(blocs[j]);
-        }   
+        }
         SDL_Surface* new_image=load_image("segmentation.bmp");
         screen_surface = display_image(new_image);
         wait_for_keypressed();
@@ -72,56 +72,58 @@ int main(int argc, char** argv) {
     }
     else{
         if(strcmp(argv[1], "--XOR")==0){
-            /*Creation of neural network*/
-            struct network *network = InitializeNetwork(2,2,1);
+          /*Creation of neural network*/
+          struct network *network = InitializeNetwork(2,2,1);
 
-            static const int number_training_sets = 4;
-            FILE *result_file;
-            result_file = fopen("source/Xor/Xor-data.txt", "w");
-            double training_inputs[] = {0.0f,0.0f,1.0f,0.0f,0.0f,1.0f,1.0f,1.0f};
-            double training_outputs[]= {0.0f,1.0f,1.0f,0.0f};
-            int trainingSetOrder[] = {0,1,2,3};
+          static const int number_training_sets = 4;
+          FILE *result_file;
+          result_file = fopen("source/Xor/Xor-data.txt", "w");
+          double training_inputs[] = {0.0f,0.0f,1.0f,0.0f,0.0f,1.0f,1.0f,1.0f};
+          double training_outputs[]= {0.0f,1.0f,1.0f,0.0f};
+          int trainingSetOrder[] = {0,1,2,3};
 
-            printf("Finished all initialization !\n");
-            char answer[1];
-            printf("Do you want to train the neural network or use it ?\n1 = Train it\n2 = Use it\n");
-            fgets(answer,2,stdin);
-            if (atoi(&answer[0])== 1)
-            {
-                printf("Started computing ... \n");
-                int nb = 20000;
-                int step = 0;
-                int i;
-                for (int n=0; n < nb; n++)
-                {
-                    step++;
-                    progressBar(step,nb);
-                    shuffle(trainingSetOrder,number_training_sets);
-                    for (int x=0; x<number_training_sets; x++)
-                    {
-                        i = forward_pass(x ,network,trainingSetOrder,\
-                          training_inputs);
-
-                        back_propagation(network,i,training_inputs,training_outputs);
-                    }
-                    fprintf(result_file, "input : %f ^ %f => output = %f , expected : %f\n",\
-                    training_inputs[i*network->number_of_inputs],training_inputs[i*network->number_of_inputs+1],\
-                    network->output_layer[0],training_outputs[i*network->number_of_outputs]);
-                }
-                printf("\n");
-                printf("\e[?25h");
-                fclose(result_file);
-                //save_weights_bias(number_of_outputs,number_of_hidden_nodes,number_of_inputs,output_layer_bias,output_weights,hidden_layer_bias,hidden_weights);
-            }
-            else if (atoi(&answer[0])== 2)
-            {
-              double number1;
-              double number2;
-              printf("Please input the first number :\n");
-              scanf("%lf\n",&number1);
-              printf("Please input the second number :\n");
-              scanf("%lf\n",&number2);
-            }
+          printf("Finished all initialization !\n");
+          char answer[1];
+          printf("Do you want to train the neural network or use it ?\n1 = Train it\n2 = Use it\n");
+          fgets(answer,2,stdin);
+          if (atoi(&answer[0])== 1)
+          {
+              printf("Started computing ... \n");
+              int nb = 20000;
+              int step = 0;
+              for (int n=0; n < nb; n++)
+              {
+                  step++;
+                  progressBar(step,nb);
+                  shuffle(trainingSetOrder,number_training_sets);
+                  for (int x=0; x<number_training_sets; x++)
+                  {
+                      int index = trainingSetOrder[x];
+                      network -> input_layer[0] = training_inputs[2*index];
+                      network -> input_layer[1] = training_inputs[2*index+1];
+                      network -> goal[0] = training_outputs[index];
+                      forward_pass(network);
+                      back_propagation(network);
+                      updateweights(network);
+                      UpdateBiases(network);
+                      fprintf(result_file, "input : %f ^ %f => output = %f , expected : %f\n",network->input_layer[0],network->input_layer[1],network->output_layer[0],training_outputs[index]);
+                  }
+                  fprintf(result_file, "\n");
+              }
+              printf("\n");
+              printf("\e[?25h");
+              fclose(result_file);
+              //save_weights_bias(number_of_outputs,number_of_hidden_nodes,number_of_inputs,output_layer_bias,output_weights,hidden_layer_bias,hidden_weights);
+          }
+          else if (atoi(&answer[0])== 2)
+          {
+            double number1;
+            double number2;
+            printf("Please input the first number :\n");
+            scanf("%lf\n",&number1);
+            printf("Please input the second number :\n");
+            scanf("%lf\n",&number2);
+          }
 
         }
         else{
