@@ -47,6 +47,28 @@ int main(int argc, char** argv) {
         SDL_FreeSurface(new_image);
         SDL_FreeSurface(screen_surface);
         SDL_Quit();
+        FILE * output = fopen("output.tst","w");
+        for (int k = 0; k < chars_count; ++k) {
+            //printf("\n \n Letter number : %i \n",k);
+            //printf("{");
+            int i;
+            for (i = 0; i < 900 - 1; ++i) {
+                //printf("%i,", letters_matrix[k][i]);
+                putc(chars_matrix[k][i] +'0', output);
+                if ((i+1)*(i+1) % 30 == 0) {
+                    putc('\n',output);
+                    //printf("\n");
+                }
+            }
+            putc(chars_matrix[k][i] +'0', output);
+            //printf("%i} \n", letters_matrix[k][i]);
+            fprintf(output,"\n\n");
+        }
+        for (int j = 0; j < BlocCount; ++j) {
+            for (int i = 0; i < CountChars(blocs[j]); ++i) {
+                SDL_FreeSurface(chars[j][i]);
+            }
+        }
     }
     else{
         if(strcmp(argv[1], "--XOR")==0){

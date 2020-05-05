@@ -23,6 +23,6 @@ create:
 main: $(OBJ)
 
 clean:
-	rm -f *.bmp ; rm -f img/temp/*.bmp ; rm -f source/Xor/Xor-*
+	rm -f *.bmp ; rm -f img/temp/*.bmp ; rm -f source/Xor/Xor-* ; rm -f *.tst
 	$(RM) $(OBJ) $(OBJ_TESTS) $(DEP) $(DEP_TESTS) main && clear
 # END
