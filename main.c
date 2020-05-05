@@ -4,9 +4,12 @@
 #include "source/sdl/our_sdl.h"
 #include "source/segmentation/segmentation.h"
 #include "source/process/process.h"
-#include "source/nn/nn.h"
-#include "source/nn/tools.h"
+#include "source/network/network.h"
+#include "source/network/tools.h"
 #include "err.h"
+
+#define KRED  "\x1B[31m"
+#define KWHT  "\x1B[37m"
 
 int main(int argc, char** argv) {
     if (argc<2){
@@ -77,7 +80,7 @@ int main(int argc, char** argv) {
 
           static const int number_training_sets = 4;
           FILE *result_file;
-          result_file = fopen("source/Xor/Xor-data.txt", "w");
+          result_file = fopen("source/Xor/xordata.txt", "w");
           double training_inputs[] = {0.0f,0.0f,1.0f,0.0f,0.0f,1.0f,1.0f,1.0f};
           double training_outputs[]= {0.0f,1.0f,1.0f,0.0f};
           int trainingSetOrder[] = {0,1,2,3};
@@ -106,23 +109,25 @@ int main(int argc, char** argv) {
                       back_propagation(network);
                       updateweights(network);
                       UpdateBiases(network);
-                      fprintf(result_file, "input : %f ^ %f => output = %f , expected : %f\n",network->input_layer[0],network->input_layer[1],network->output_layer[0],training_outputs[index]);
+                      fprintf(result_file, "input : %f ^ %f => output = %f , expected : %f\n",\
+                      network->input_layer[0],network->input_layer[1],network->output_layer[0],training_outputs[index]);
                   }
                   fprintf(result_file, "\n");
               }
               printf("\n");
               printf("\e[?25h");
               fclose(result_file);
-              //save_weights_bias(number_of_outputs,number_of_hidden_nodes,number_of_inputs,output_layer_bias,output_weights,hidden_layer_bias,hidden_weights);
+              save_network("source/Xor/xorwb.txt",network);
           }
           else if (atoi(&answer[0])== 2)
           {
-            double number1;
-            double number2;
+            printf("%sBUGGY RIGHT NOW !%s\n",KRED,KWHT);
             printf("Please input the first number :\n");
-            scanf("%lf\n",&number1);
+            scanf("%lf\n",&network ->input_layer[0]);
             printf("Please input the second number :\n");
-            scanf("%lf\n",&number2);
+            scanf("%lf\n",&network ->input_layer[1]);
+            forward_pass(network);
+            printf("The neural network returned : %f\n", network->output_layer[0]);
           }
 
         }

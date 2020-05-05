@@ -2,7 +2,7 @@
 // Used for tweaking the weigth of each node in the neural network
 #include <stdio.h>
 #include <stdlib.h>
-#include "nn.h"
+#include "network.h"
 #include <err.h>
 #include "tools.h"
 
@@ -15,29 +15,30 @@ struct network* InitializeNetwork(double i, double h, double o){
   network-> number_of_hidden_nodes = h;
   network-> number_of_outputs = o;
   network->input_layer = calloc(network->number_of_inputs,sizeof(double));
+
   network->hidden_layer = calloc(network->number_of_hidden_nodes,sizeof(double));
   network-> delta_hidden = calloc(network ->number_of_hidden_nodes,sizeof(double));
   network->hidden_layer_bias = calloc(network->number_of_hidden_nodes,sizeof(double));
   network->hidden_weights = calloc(network->number_of_inputs * network->number_of_hidden_nodes,sizeof(double));
   network->delta_hidden_weights = calloc(network->number_of_inputs * network->number_of_hidden_nodes,sizeof(double));
+
   network->output_layer = calloc(network->number_of_outputs,sizeof(double));
   network-> delta_output = calloc(network -> number_of_outputs,sizeof(double));
   network->output_layer_bias = calloc(network->number_of_outputs,sizeof(double));
   network->output_weights = calloc(network->number_of_hidden_nodes * network->number_of_outputs,sizeof(double));
   network->delta_output_weights = calloc(network->number_of_hidden_nodes * network->number_of_outputs,sizeof(double));
+
   network->goal = calloc(network->number_of_outputs,sizeof(double));
   network->eta = 0.5f;
   network -> alpha = 0.9f;
 
-  if(!fileempty("source/Xor/Xor-weights.txt"))
+  if(!fileempty("source/Xor/xorwb.txt"))
   {
-      read_file("source/Xor/Xor-weights.txt",network->number_of_inputs,network->number_of_outputs, \
-      network->number_of_hidden_nodes,network->hidden_layer_bias,network->hidden_weights,network->output_layer_bias,network->output_weights);
+      load_network("source/Xor/xorwb.txt",network);
   }
   else{
       initialization(network);
   }
-
   return network;
 }
 

@@ -7,16 +7,19 @@ struct network {
   int number_of_hidden_nodes ;
   int number_of_outputs ;
   double *input_layer;
+
   double *hidden_layer;
   double *delta_hidden;
   double *hidden_layer_bias;
   double *hidden_weights;
   double *delta_hidden_weights;
+
   double *output_layer;
   double *delta_output;
   double *output_layer_bias;
   double *output_weights;
   double *delta_output_weights;
+  
   double eta;
   double alpha;
   double *goal;
