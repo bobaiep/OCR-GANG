@@ -22,34 +22,28 @@ int main(int argc, char** argv) {
         /* Init SDL */
         init_sdl();
         /* Load Image */
-        SDL_Surface* image=load_image(argv[2]);
+        SDL_Surface* image = load_image(argv[2]);
         SDL_Surface* screen_surface = display_image(image);
         wait_for_keypressed();
         /* Black and White */
         image = black_and_white(image);
         screen_surface = display_image(image);
         wait_for_keypressed();
-        /*Trace red lines*/
+        SDL_SaveBMP(image,"binarisation.bmp");
         DrawRedLines(image);
         int BlocCount = CountBlocs(image);
         SDL_Surface ***chars = malloc(sizeof(SDL_Surface**) * BlocCount);
         SDL_Surface **blocs = malloc(sizeof(SDL_Surface*) * BlocCount);
-
-        DivideIntoBlocs(image,blocs,chars); //Divides image into lines
-        char file[12];
+        int *charslen = DivideIntoBlocs(image,blocs,chars, BlocCount); //Divides image into lines
+        SDL_SaveBMP(image,"segmentation.bmp"); //Save image in folder
         for (int j = 0; j < BlocCount; ++j) {
-            for (int i = 0; i < CountChars(blocs[j]); ++i) {
-                char loc[100] = "img/temp/";
-                sprintf(file,"%i",j*100 + i);
-                strcat(file,".bmp");
-                SDL_SaveBMP(chars[j][i], strcat(loc,file)); //Save each blocs in a image in a folder
-            }
-        }
-        SDL_SaveBMP(image,"segmentation.bmp"); //Save image with red lines in folder
+            SDL_FreeSurface(blocs[j]);
+        }   
         SDL_Surface* new_image=load_image("segmentation.bmp");
         screen_surface = display_image(new_image);
         wait_for_keypressed();
-        SDL_FreeSurface(image);
+        int **chars_matrix =  NULL;
+        int chars_count = ImageToMatrix(chars,&chars_matrix, charslen, BlocCount);
         SDL_FreeSurface(new_image);
         SDL_FreeSurface(screen_surface);
         SDL_Quit();
