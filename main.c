@@ -73,7 +73,7 @@ int main(int argc, char** argv) {
     else{
         if(strcmp(argv[1], "--XOR")==0){
           /*Creation of neural network*/
-          struct network *network = InitializeNetwork(2,2,1);
+          struct network *network = InitializeNetwork(2,4,1);
 
           static const int number_training_sets = 4;
           FILE *result_file;
@@ -89,7 +89,7 @@ int main(int argc, char** argv) {
           if (atoi(&answer[0])== 1)
           {
               printf("Started computing ... \n");
-              int nb = 20000;
+              int nb = 10000;
               int step = 0;
               for (int n=0; n < nb; n++)
               {
