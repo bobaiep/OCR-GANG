@@ -19,7 +19,7 @@ struct network {
   double *output_layer_bias;
   double *output_weights;
   double *delta_output_weights;
-  
+
   double eta;
   double alpha;
   double *goal;
@@ -36,5 +36,7 @@ void back_propagation(struct network *net);
 void updateweights(struct network *net);
 
 void UpdateBiases(struct network *net);
+
+void InputImage(struct network *net,size_t index,int ***chars_matrix);
 
 #endif

@@ -108,6 +108,7 @@ void XOR(){
         printf("\e[?25h");
         fclose(result_file);
         save_network("source/Xor/xorwb.txt",network);
+        free(network);
     }
     else if (atoi(&answer[0])== 2)
     {
@@ -118,6 +119,72 @@ void XOR(){
         scanf("%lf\n",&network ->input_layer[1]);
         forward_pass(network);
         printf("The neural network returned : %f\n", network->output_layer[0]);
+    }
+}
+
+void OCR(char* filepath){
+
+    // Initialization
+        /*Creation of neural network*/
+    struct network *network = InitializeNetwork(30*30,20,52);
+        /* Init SDL */
+    init_sdl();
+
+    // Segmentation
+
+        /*See if the file even exist*/
+    if(cfileexists(filepath)){
+
+            /* Load Image */
+        SDL_Surface* image = load_image(filepath);
+        SDL_Surface* screen_surface = display_image(image);
+        wait_for_keypressed();
+
+            /* Black and White */
+        image = black_and_white(image);
+        screen_surface = display_image(image);
+        wait_for_keypressed();
+        SDL_SaveBMP(image,"binarisation.bmp");
+
+            /* Draw red line*/
+        DrawRedLines(image);
+
+            /* Divides image into blocs */
+        int BlocCount = CountBlocs(image);
+        SDL_Surface ***chars = malloc(sizeof(SDL_Surface**) * BlocCount);
+        SDL_Surface **blocs = malloc(sizeof(SDL_Surface*) * BlocCount);
+        int *charslen = DivideIntoBlocs(image,blocs,chars, BlocCount);
+        SDL_SaveBMP(image,"segmentation.bmp");
+            /* Save image in folder */
+        for (int j = 0; j < BlocCount; ++j) {
+            SDL_FreeSurface(blocs[j]);
+        }
+
+        SDL_Surface* new_image=load_image("segmentation.bmp");
+        screen_surface = display_image(new_image);
+        wait_for_keypressed();
+
+        // Converts the image into a matrix for input
+        int **chars_matrix =  NULL;
+        int chars_count = ImageToMatrix(chars,&chars_matrix, charslen, BlocCount);
+
+        // Reconstruct the text
+        char *result = calloc(chars_count,sizeof(char));
+
+        for (size_t index = 0; index < (size_t)chars_count; index++) {
+            InputImage(network,index,&chars_matrix);
+            forward_pass(network);
+            size_t index_answer = IndexAnswer(network);
+            result[index] = RetrieveChar(index_answer);
+        }
+
+        // Quit the program
+        SDL_FreeSurface(new_image);
+        SDL_FreeSurface(screen_surface);
+        SDL_Quit();
+        free(network);
+        printf("Finished !\n");
+
     }
 }
 
@@ -139,13 +206,18 @@ int main(int argc, char** argv) {
             XOR();
         }
         else{
-            printf("-----------------------\n");
-            printf("Bienvenue dans OCR GANG\n");
-            printf("-----------------------\n");
-            printf("Arguments :\n");
-            printf("    --seg   Montre la segmentation (spécifiez un image path)\n");
-            printf("    --XOR   Montre la fonction XOR\n");
-            return 0;
+            if(strcmp(argv[1], "--OCR")==0 && argc==3){
+                OCR(argv[2]);
+            }
+            else{
+                printf("-----------------------\n");
+                printf("Bienvenue dans OCR GANG\n");
+                printf("-----------------------\n");
+                printf("Arguments :\n");
+                printf("    --seg   Montre la segmentation (spécifiez un image path)\n");
+                printf("    --XOR   Montre la fonction XOR\n");
+                return 0;
+            }
         }
     }
     return 0;

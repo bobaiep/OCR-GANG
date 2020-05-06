@@ -135,3 +135,70 @@ void shuffle(int *array, size_t n)
         }
     }
 }
+
+size_t IndexAnswer(struct network *net){
+    size_t index = 0;
+    for (size_t i = 1; i < (size_t)net->number_of_outputs; i++) {
+        if (net->output_layer[i]>net->output_layer[index]){
+            index = i;
+        }
+    }
+    return index;
+}
+char RetrieveChar(size_t val)
+{
+  char c;
+
+  if(val <= 25)
+  {
+    c = val + 65;
+  }
+  else if(val > 25 && val <= 51)
+  {
+    c = (val + 97 - 26);
+  }
+  else if(val > 51 && val <= 61)
+  {
+    c = val + 48 - 52;
+  }
+  else
+  {
+    switch(val)
+    {
+      case 62:
+        c = ';';
+        break;
+      case 63:
+        c = '\'';
+        break;
+      case 64:
+        c = ':';
+        break;
+      case 65:
+        c = '-';
+        break;
+      case 66:
+        c = '.';
+        break;
+      case 67:
+        c = '!';
+        break;
+      case 68:
+        c = '?';
+        break;
+      case 69:
+        c = '(';
+        break;
+      case 70:
+        c = '\"';
+        break;
+      case 71:
+        c = ')';
+        break;
+      default:
+        exit(1);
+        break;
+    }
+  }
+  return c;
+}

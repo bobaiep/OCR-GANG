@@ -176,3 +176,9 @@ void UpdateBiases(struct network *net)
   }
 
 }
+
+void InputImage(struct network *net,size_t index,int ***chars_matrix){
+    for (size_t i = 0; i < 900; i++) {
+        net->input_layer[i] = (*chars_matrix)[index][i];
+    }
+}
