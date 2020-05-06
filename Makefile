@@ -16,7 +16,6 @@ all: main create
 
 create:
 	[ -d "source/Xor" ] || mkdir source/Xor
-	[ -d "img/temp" ] || mkdir img/temp
 	[ -d "source/OCR" ] || mkdir source/OCR
 	touch source/Xor/xordata.txt
 	touch source/Xor/xorwb.txt
