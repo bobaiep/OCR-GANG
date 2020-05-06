@@ -33,9 +33,7 @@ void forward_pass(struct network *net);
 
 void back_propagation(struct network *net);
 
-void updateweights(struct network *net);
-
-void UpdateBiases(struct network *net);
+void updateweightsetbiases(struct network *net);
 
 void InputImage(struct network *net,size_t index,int ***chars_matrix);
 

@@ -97,8 +97,7 @@ void XOR(){
                 network -> goal[0] = training_outputs[index];
                 forward_pass(network);
                 back_propagation(network);
-                updateweights(network);
-                UpdateBiases(network);
+                updateweightsetbiases(network);
                 fprintf(result_file, "input : %f ^ %f => output = %f , expected : %f\n",\
                 network->input_layer[0],network->input_layer[1],network->output_layer[0],training_outputs[index]);
             }
@@ -177,14 +176,11 @@ void OCR(char* filepath){
             size_t index_answer = IndexAnswer(network);
             result[index] = RetrieveChar(index_answer);
         }
-
         // Quit the program
         SDL_FreeSurface(new_image);
         SDL_FreeSurface(screen_surface);
         SDL_Quit();
         free(network);
-        printf("Finished !\n");
-
     }
 }
 
