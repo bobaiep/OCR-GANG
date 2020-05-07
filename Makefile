@@ -3,12 +3,12 @@
 
 CC=gcc
 
-CPPFLAGS= `pkg-config --cflags sdl` -MMD
+CPPFLAGS= `pkg-config --cflags sdl gtk+-3.0` -MMD
 CFLAGS= -Wall -Wextra -std=c99 -O3 -g
-LDFLAGS=
-LDLIBS= `pkg-config --libs sdl` -lSDL_image
+LDFLAGS= -rdynamic
+LDLIBS= `pkg-config --libs sdl gtk+-3.0` -lSDL_image
 
-SRC= main.c source/process/process.c source/sdl/our_sdl.c source/segmentation/segmentation.c source/network/network.c source/network/tools.c
+SRC= main.c source/process/process.c source/sdl/our_sdl.c source/segmentation/segmentation.c source/network/network.c source/network/tools.c source/GUI/gui.c
 OBJ= $(SRC:.c=.o)
 DEP= $(SRC:.c=.d)
 

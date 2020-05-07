@@ -15,7 +15,7 @@ void init_sdl()
         errx(1,"Could not initialize SDL: %s.\n", SDL_GetError());
 }
 
-SDL_Surface* load_image(char *path)
+SDL_Surface* load__image(char *path)
 {
     SDL_Surface *img;
 
