@@ -151,9 +151,7 @@ void updateweightsetbiases(struct network *net){
 int InputImage(struct network *net,size_t index,int ***chars_matrix){
   int is_espace = 1;
     for (size_t i = 0; i < 900; i++) {
-        printf("inputing\n");
         net->input_layer[i] = (*chars_matrix)[index][i];
-        printf("inputed\n");
         if (net->input_layer[i] == 1) {
           is_espace = 0;
         }

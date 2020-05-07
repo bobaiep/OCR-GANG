@@ -122,9 +122,7 @@ void XOR(){
     }
 }
 
-void OCR(char* filepath){
-
-    struct network *network = InitializeNetwork(30*30,20,52);
+void OCR(char* filepath,struct network *network){
     init_sdl();
 
     if(cfileexists(filepath)){
@@ -174,19 +172,7 @@ void OCR(char* filepath){
         //SDL_FreeSurface(screen_surface);
         SDL_Quit();
         free(network);
-
-
-        if ('a'<'A') {
-          printf(" 0 == True\n");
-        }
-        else{
-          printf(" 0 === False\n");
-        }
-        //printf("Should be 52 characters : %d\n",chars_count);
-        //printf("Pos of Z (should be 25) : %lu\n",ExpectedPos('Z') );
-        //printf("Pos of a (should be 26) : %lu\n",ExpectedPos('a') );
-        //printf("Pos of z (should be 51) : %lu\n",ExpectedPos('z') );
-        //printf("Number of chars : %d\n",chars_count);
+        printf("%s\n",result);
     }
 }
 char * updatepath(char *filepath,size_t len,char c)
@@ -217,7 +203,7 @@ void TrainNeuralNetwork(struct network *network){
         trainingSetOrder[i] = i;
     }
 
-    for (size_t i = 0; i < 1; i++)
+    for (size_t i = 0; i < 2000; i++)
     {
         shuffle(trainingSetOrder,52);
 
@@ -229,28 +215,29 @@ void TrainNeuralNetwork(struct network *network){
           printf("%s\n",filepath);
 
           SDL_Surface* image = load_image(filepath);
-          //printf("loaded\n");
+
           image = black_and_white(image);
-          //printf("black & white ok\n");
+
           DrawRedLines(image);
-          //printf("draw red line ok\n");
+
           int BlocCount = CountBlocs(image);
           SDL_Surface ***chars = malloc(sizeof(SDL_Surface**) * BlocCount);
           SDL_Surface **blocs = malloc(sizeof(SDL_Surface*) * BlocCount);
           int *charslen = DivideIntoBlocs(image,blocs,chars, BlocCount);
 
-          for (int j = 0; j < BlocCount; ++j)
-          {
+          for (int j = 0; j < BlocCount; ++j) {
               SDL_FreeSurface(blocs[j]);
           }
 
           int **chars_matrix =  NULL;
           int chars_count = ImageToMatrix(chars,&chars_matrix, charslen, BlocCount);
-          chars_count += 1;
+
+          //printf("%d\n",chars_count);
+          //printf("%d\n",BlocCount );
 
           ExpectedOutput(network,expected_result[input_index]);
           printf("ExpectedOutput ok\n");
-          InputImage(network,input_index,&chars_matrix);
+          InputImage(network,0,&chars_matrix);
           printf("InputImage ok\n");
           forward_pass(network);
           forward_pass(network);
@@ -279,7 +266,9 @@ int main(int argc, char** argv) {
         }
         else{
             if(strcmp(argv[1], "--OCR")==0 && argc==3){
-                OCR(argv[2]);
+                struct network *network = InitializeNetwork(30*30,20,52);
+                TrainNeuralNetwork(network);
+                OCR(argv[2],network);
             }
 
             else{
