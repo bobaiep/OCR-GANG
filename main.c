@@ -6,6 +6,7 @@
 #include "source/process/process.h"
 #include "source/network/network.h"
 #include "source/network/tools.h"
+#include <string.h>
 #include "err.h"
 
 #define KRED  "\x1B[31m"
@@ -188,57 +189,75 @@ void OCR(char* filepath){
         //printf("Number of chars : %d\n",chars_count);
     }
 }
+char * updatepath(char *filepath,size_t len,char c)
+{
+    char *newpath = malloc(len*sizeof(char));
+    for (size_t i = 0; i < len; i++) {
+        if (i != 13) {
+            newpath[i] = filepath[i];
+        }
+        else{
+            newpath[i] = c;
+        }
+    }
+    return newpath;
+}
 
 void TrainNeuralNetwork(struct network *network){
 
     init_sdl();
-    char *filepath = "img/training/A.jpg";
+    char *filepath = "img/training/A0.png";
+    char expected_result[52] = {'A','a','B','b','C','c','D','d','E','e','F','f','G',\
+    'g','H','h','I','i','J','j','K','k','L','I','M','m','N','n','O','o','P','p',\
+    'Q','q','R','r','S','s','I','t','U','u','V','v','W','w','X','x','Y','y','Z','z'};
 
-    if(cfileexists(filepath))
+    int trainingSetOrder[52];
+    for (size_t i = 0; i < 52; i++)
     {
-        SDL_Surface* image = load_image(filepath);
-        image = black_and_white(image);
-        DrawRedLines(image);
-
-        int BlocCount = CountBlocs(image);
-        SDL_Surface ***chars = malloc(sizeof(SDL_Surface**) * BlocCount);
-        SDL_Surface **blocs = malloc(sizeof(SDL_Surface*) * BlocCount);
-        int *charslen = DivideIntoBlocs(image,blocs,chars, BlocCount);
-
-        for (int j = 0; j < BlocCount; ++j)
-        {
-            SDL_FreeSurface(blocs[j]);
-        }
-
-        int **chars_matrix =  NULL;
-        int chars_count = ImageToMatrix(chars,&chars_matrix, charslen, BlocCount);
-        chars_count += 1;
-
-        int trainingSetOrder[52];
-        for (size_t i = 0; i < 52; i++)
-        {
-            trainingSetOrder[i] = i;
-        }
-
-        char expectd_result[52] = {'A','a','B','b','C','c','D','d','E','e','F','f','G',\
-        'g','H','h','I','i','J','j','K','k','L','I','M','m','N','n','O','o','P','p',\
-        'Q','q','R','r','S','s','I','t','U','u','V','v','W','w','X','x','Y','y','Z','z'};
-
-        for (size_t i = 0; i < 4900; i++)
-        {
-            shuffle(trainingSetOrder,52);
-            for (size_t index = 0; index < 52; index++)
-            {
-              size_t input_index = trainingSetOrder[index];
-              ExpectedOutput(network,expectd_result[input_index]);
-              InputImage(network,input_index,&chars_matrix);
-              forward_pass(network);
-              forward_pass(network);
-              back_propagation(network);
-              updateweightsetbiases(network);
-            }
-        }
+        trainingSetOrder[i] = i;
     }
+
+    for (size_t i = 0; i < 1; i++)
+    {
+        shuffle(trainingSetOrder,52);
+
+        for (size_t index = 0; index < 52; index++)
+        {
+          size_t input_index = trainingSetOrder[index];
+          printf("%lu\n",input_index);
+          filepath = updatepath(filepath,(size_t)strlen(filepath),expected_result[input_index]);
+          printf("%s\n",filepath);
+
+          SDL_Surface* image = load_image(filepath);
+          //printf("loaded\n");
+          image = black_and_white(image);
+          //printf("black & white ok\n");
+          DrawRedLines(image);
+          //printf("draw red line ok\n");
+          int BlocCount = CountBlocs(image);
+          SDL_Surface ***chars = malloc(sizeof(SDL_Surface**) * BlocCount);
+          SDL_Surface **blocs = malloc(sizeof(SDL_Surface*) * BlocCount);
+          int *charslen = DivideIntoBlocs(image,blocs,chars, BlocCount);
+
+          for (int j = 0; j < BlocCount; ++j)
+          {
+              SDL_FreeSurface(blocs[j]);
+          }
+
+          int **chars_matrix =  NULL;
+          int chars_count = ImageToMatrix(chars,&chars_matrix, charslen, BlocCount);
+          chars_count += 1;
+
+          ExpectedOutput(network,expected_result[input_index]);
+          printf("ExpectedOutput ok\n");
+          InputImage(network,input_index,&chars_matrix);
+          printf("InputImage ok\n");
+          forward_pass(network);
+          forward_pass(network);
+          back_propagation(network);
+          updateweightsetbiases(network);
+      }
+  }
 }
 
 int main(int argc, char** argv) {
@@ -262,14 +281,21 @@ int main(int argc, char** argv) {
             if(strcmp(argv[1], "--OCR")==0 && argc==3){
                 OCR(argv[2]);
             }
+
             else{
-                printf("-----------------------\n");
-                printf("Bienvenue dans OCR GANG\n");
-                printf("-----------------------\n");
-                printf("Arguments :\n");
-                printf("    --seg   Montre la segmentation (spécifiez un image path)\n");
-                printf("    --XOR   Montre la fonction XOR\n");
-                return 0;
+                if (strcmp(argv[1], "--train")==0) {
+                    struct network *network = InitializeNetwork(30*30,20,52);
+                    TrainNeuralNetwork(network);
+                }
+                else{
+                    printf("-----------------------\n");
+                    printf("Bienvenue dans OCR GANG\n");
+                    printf("-----------------------\n");
+                    printf("Arguments :\n");
+                    printf("    --seg   Montre la segmentation (spécifiez un image path)\n");
+                    printf("    --XOR   Montre la fonction XOR\n");
+                    return 0;
+                }
             }
         }
     }
