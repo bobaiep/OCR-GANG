@@ -35,6 +35,6 @@ void back_propagation(struct network *net);
 
 void updateweightsetbiases(struct network *net);
 
-void InputImage(struct network *net,size_t index,int ***chars_matrix);
+int InputImage(struct network *net,size_t index,int ***chars_matrix);
 
 #endif

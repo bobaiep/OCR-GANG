@@ -20,4 +20,8 @@ char RetrieveChar(size_t val);
 
 size_t IndexAnswer(struct network *net);
 
+void ExpectedOutput(struct network *network,char c);
+
+size_t ExpectedPos(char c);
+
 #endif

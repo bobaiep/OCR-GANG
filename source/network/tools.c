@@ -202,3 +202,27 @@ char RetrieveChar(size_t val)
   }
   return c;
 }
+
+size_t ExpectedPos(char c){
+  size_t index= (size_t)c;
+  if ( c >= 'A' && c <= 'Z') {
+    index -= 65;
+  }
+  if (c >= 'a' && c <= 'z') {
+    index -= 71;
+  }
+  return index;
+}
+
+void ExpectedOutput(struct network *network,char c) {
+  size_t index  = ExpectedPos(c);
+  for (size_t i = 0; i < (size_t)network->number_of_outputs; i++) {
+    if ( i == index) {
+      network->goal[i] = 1;
+    }
+    else{
+      network->goal[i] = 0;
+    }
+  }
+
+}
