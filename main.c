@@ -202,17 +202,17 @@ void TrainNeuralNetwork(struct network *network){
     {
         trainingSetOrder[i] = i;
     }
-
-    for (size_t i = 0; i < 2000; i++)
+    int nb = 1000;
+    int step = 0;
+    for (size_t i = 0; i < (size_t)nb; i++)
     {
         shuffle(trainingSetOrder,52);
-
+        progressBar(step,nb);
+        step++;
         for (size_t index = 0; index < 52; index++)
         {
           size_t input_index = trainingSetOrder[index];
-          printf("%lu\n",input_index);
           filepath = updatepath(filepath,(size_t)strlen(filepath),expected_result[input_index]);
-          printf("%s\n",filepath);
 
           SDL_Surface* image = load_image(filepath);
 
@@ -232,19 +232,17 @@ void TrainNeuralNetwork(struct network *network){
           int **chars_matrix =  NULL;
           int chars_count = ImageToMatrix(chars,&chars_matrix, charslen, BlocCount);
 
-          //printf("%d\n",chars_count);
-          //printf("%d\n",BlocCount );
-
           ExpectedOutput(network,expected_result[input_index]);
-          printf("ExpectedOutput ok\n");
           InputImage(network,0,&chars_matrix);
-          printf("InputImage ok\n");
           forward_pass(network);
-          forward_pass(network);
+          //PrintState(network,expected_result[input_index],RetrieveChar(IndexAnswer(network)));
           back_propagation(network);
           updateweightsetbiases(network);
       }
   }
+  printf("\n");
+  printf("\e[?25h");
+  save_network("source/Xor/ocrwb.txt",network);
 }
 
 int main(int argc, char** argv) {

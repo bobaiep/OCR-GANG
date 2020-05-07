@@ -2,6 +2,10 @@
 #include <stdlib.h>
 #include "network.h"
 
+#define KRED  "\x1B[31m"
+#define KWHT  "\x1B[37m"
+#define KGRN  "\x1B[32m"
+
 void progressBar(int step,int nb){
     printf("\e[?25l");
     int percent = (step*100)/nb;
@@ -226,3 +230,32 @@ void ExpectedOutput(struct network *network,char c) {
   }
 
 }
+
+/*void PrintState(struct network *net, char expected, char obtained)
+{
+  //Squared error function
+  SquaredError(net);
+  int output = RetrievePos(net);
+
+  //Retrive the chars : wanted & found
+  char goalChar = RetrieveChar(PosGoal(net -> Goal));
+  char recognizedChar = RetrieveChar(output);
+
+  if(net -> ErrorRate > net -> MaxErrorRate)
+    net -> MaxErrorRate = net -> ErrorRate;
+
+  //Print the progress
+  if(output == PosGoal(net -> Goal))
+    printf("Position Found = %d Expected %d %sOK \n",
+                    output, PosGoal(net -> Goal),KGRN);
+  else
+    printf("Position Found = %d Expected %d %sKO \n",
+                    output, PosGoal(net -> Goal),KRED);
+
+  printf("%s",KWHT);
+
+  printf("Char entered: %c | Char recoginized: %c | ErrorRate: %f\n",
+                                                    goalChar,
+                                                    recognizedChar,
+                                                    net -> ErrorRate);
+}*/
