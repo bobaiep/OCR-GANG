@@ -12,6 +12,7 @@
 
 #define KRED  "\x1B[31m"
 #define KWHT  "\x1B[37m"
+#define UNUSED(x) (void)(x)
 
 void segmentation(char* filepath){
     /* Init SDL */
@@ -217,6 +218,7 @@ void TNeuralNetwork(struct network *network){
             //PrintState(network,expected_result[input_index],RetrieveChar(IndexAnswer(network)));
             back_propagation(network);
             updateweightsetbiases(network);
+            UNUSED(chars_count);
             //printf("%d\n",chars_count);
       }
   }

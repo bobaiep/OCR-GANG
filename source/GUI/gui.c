@@ -22,9 +22,9 @@ void save_text(GtkButton *button, GtkTextBuffer *buffer)
         filename = gtk_file_chooser_get_filename (GTK_FILE_CHOOSER (dialog));
         /* set the contents of the file to the text from the buffer */
         if (filename != NULL)
-        g_file_set_contents (filename, text, strlen(text), NULL);
+            g_file_set_contents (filename, text, strlen(text), NULL);
         else
-        g_file_set_contents (filename, text, strlen(text), NULL);
+            g_file_set_contents (filename, text, strlen(text), NULL);
   }
   gtk_widget_destroy (dialog);
 
@@ -38,8 +38,8 @@ void load_image(GtkButton *button, GtkImage *image)
 	SDL_Surface *img = load__image((char *)filename);
 	if(img->w > 560 && img->h > 560){
 		SDL_Surface *new = resize(img);
-		SDL_SaveBMP(new,"image_resize");
-		gtk_image_set_from_file (GTK_IMAGE (image), "image_resize");
+		SDL_SaveBMP(new,"image_resize.bmp");
+		gtk_image_set_from_file (GTK_IMAGE (image), "image_resize.bmp");
 	}
 	else{
         gtk_image_set_from_file (GTK_IMAGE (image), filename);
@@ -140,6 +140,7 @@ int TrainNeuralNetwork(){
             InputImage(network,0,&chars_matrix);
             forward_pass(network);
             //PrintState(network,expected_result[input_index],RetrieveChar(IndexAnswer(network)));
+            UNUSED(chars_count);
             back_propagation(network);
             updateweightsetbiases(network);
             //printf("%d",chars_count);
@@ -152,11 +153,12 @@ int TrainNeuralNetwork(){
     return EXIT_SUCCESS;
 }
 
-int OCR(GtkTextBuffer *buffer){
+int OCR(GtkButton *button,GtkTextBuffer *buffer){
+    UNUSED(button);
     struct network *network = InitializeNetwork(30*30,20,52);
     init_sdl();
-    if(cfileexists(filename)){
-        SDL_Surface* image = load__image(filename);
+    if(cfileexists((char*)filename)){
+        SDL_Surface* image = load__image((char*)filename);
         //SDL_Surface* screen_surface = display_image(image);
         //wait_for_keypressed();
         image = black_and_white(image);
@@ -169,15 +171,6 @@ int OCR(GtkTextBuffer *buffer){
         SDL_Surface **blocs = malloc(sizeof(SDL_Surface*) * BlocCount);
         int *charslen = DivideIntoBlocs(image,blocs,chars, BlocCount);
         SDL_SaveBMP(image,"segmentation.bmp");
-        if(image->w > 560 && image->h > 560){
-            SDL_Surface *new = resize(image);
-            SDL_SaveBMP(new,"segmentation_resize");
-            gtk_image_set_from_file (GTK_IMAGE (image), "segmentation_resize");
-	    }
-        else{
-            gtk_image_set_from_file (GTK_IMAGE (image), "segmentation.bmp");
-        }
-
         for (int j = 0; j < BlocCount; ++j) {
             SDL_FreeSurface(blocs[j]);
         }
@@ -186,7 +179,6 @@ int OCR(GtkTextBuffer *buffer){
         //wait_for_keypressed();
         int **chars_matrix =  NULL;
         int chars_count = ImageToMatrix(chars,&chars_matrix, charslen, BlocCount);
-
         char *result = calloc(chars_count,sizeof(char));
 
         for (size_t index = 0; index < (size_t)chars_count; index++) {
@@ -203,6 +195,7 @@ int OCR(GtkTextBuffer *buffer){
         //SDL_FreeSurface(new_image);
         //SDL_FreeSurface(screen_surface);
         SDL_Quit();
+        text = result;
         gtk_text_buffer_set_text (buffer,result,strlen(result));
         free(network);
         return EXIT_SUCCESS;
