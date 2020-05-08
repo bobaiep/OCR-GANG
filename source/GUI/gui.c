@@ -32,16 +32,28 @@ void save_text(GtkButton *button, GtkTextBuffer *buffer)
 
 void load_image(GtkButton *button, GtkImage *image)
 {
-  if(strcmp(filename,"") == 0)
-    return;
-  UNUSED(button);
-	SDL_Surface *img = load__image((char *)filename);
-	if(img->w > 560 && img->h > 560){
-		SDL_Surface *new = resize(img);
-		SDL_SaveBMP(new,"image_resize.bmp");
-		gtk_image_set_from_file (GTK_IMAGE (image), "image_resize.bmp");
-	}
-	else{
+    if(strcmp(filename,"") == 0)
+        return;
+    UNUSED(button);
+    SDL_Surface *img = load__image((char *)filename);
+    if(img->w > 560 && img->h > 560){
+        float wi = img->w;
+        float hi = img->h;
+        float max_h = 560.;
+        float max_w = 560.;
+        float best;
+        if (max_w / wi < max_h / hi)
+            best = max_w / wi;
+        else
+            best = max_h / hi;
+        int new_w = wi * best;
+        int new_h = hi * best;
+        printf("%d %d",new_w,new_h);
+        SDL_Surface *new = resize(img,new_w,new_h);
+        SDL_SaveBMP(new,"image_resize.bmp");
+        gtk_image_set_from_file (GTK_IMAGE (image), "image_resize.bmp");
+    }
+    else{
         gtk_image_set_from_file (GTK_IMAGE (image), filename);
     }
 }
