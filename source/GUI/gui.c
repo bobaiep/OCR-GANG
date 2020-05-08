@@ -43,7 +43,7 @@ void load_image(GtkButton *button, GtkImage *image)
 	}
 	else{
         gtk_image_set_from_file (GTK_IMAGE (image), filename);
-    }	
+    }
 }
 //Colors for print
 #define KRED  "\x1B[31m"
@@ -90,6 +90,7 @@ char * UpdatePath(char *filepath,size_t len,char c)
             newpath[i] = c;
         }
     }
+    newpath[19] = '\0';
     return newpath;
 }
 

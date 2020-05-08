@@ -168,23 +168,10 @@ void StartOCR(char* filepath,struct network *network){
         printf("%s\n",result);
     }
 }
-char * updatepath(char *filepath,size_t len,char c)
-{
-    char *newpath = malloc(len*sizeof(char));
-    for (size_t i = 0; i < len; i++) {
-        if (i != 13) {
-            newpath[i] = filepath[i];
-        }
-        else{
-            newpath[i] = c;
-        }
-    }
-    return newpath;
-}
 
 void TNeuralNetwork(struct network *network){
     init_sdl();
-    char *filepath = "img/training/A0.png";
+    char *filepath = "img/training/A0.png\0";
     char expected_result[52] = {'A','a','B','b','C','c','D','d','E','e','F','f','G',\
     'g','H','h','I','i','J','j','K','k','L','I','M','m','N','n','O','o','P','p',\
     'Q','q','R','r','S','s','I','t','U','u','V','v','W','w','X','x','Y','y','Z','z'};
@@ -230,7 +217,7 @@ void TNeuralNetwork(struct network *network){
             //PrintState(network,expected_result[input_index],RetrieveChar(IndexAnswer(network)));
             back_propagation(network);
             updateweightsetbiases(network);
-            printf("%d\n",chars_count);
+            //printf("%d\n",chars_count);
       }
   }
   printf("\n");
@@ -253,7 +240,7 @@ int main(int argc, char** argv) {
         segmentation(argv[2]);
     }
     else{
-        if(strcmp(argv[1], "--XOR")==0){ 
+        if(strcmp(argv[1], "--XOR")==0){
             XOR();
         }
         else{

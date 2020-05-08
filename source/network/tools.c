@@ -231,6 +231,21 @@ void ExpectedOutput(struct network *network,char c) {
 
 }
 
+char * updatepath(char *filepath,size_t len,char c)
+{
+    char *newpath = malloc(len*sizeof(char));
+    for (size_t i = 0; i < len; i++) {
+        if (i != 13) {
+            newpath[i] = filepath[i];
+        }
+        else{
+            newpath[i] = c;
+        }
+    }
+    newpath[19] = '\0';
+    return newpath;
+}
+
 /*void PrintState(struct network *net, char expected, char obtained)
 {
   //Squared error function

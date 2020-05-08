@@ -24,4 +24,6 @@ void ExpectedOutput(struct network *network,char c);
 
 size_t ExpectedPos(char c);
 
+char * updatepath(char *filepath,size_t len,char c);
+
 #endif
