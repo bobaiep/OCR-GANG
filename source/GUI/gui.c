@@ -106,13 +106,13 @@ int TrainNeuralNetwork(){
     {
         trainingSetOrder[i] = i;
     }
-    int nb = 1000;
+    int nb = 5000;
     int step = 0;
     for (size_t i = 0; i < (size_t)nb; i++)
     {
+        step++;
         shuffle(trainingSetOrder,52);
         progressBar(step,nb);
-        step++;
         for (size_t index = 0; index < 52; index++)
         {
             size_t input_index = trainingSetOrder[index];
@@ -142,7 +142,7 @@ int TrainNeuralNetwork(){
             //PrintState(network,expected_result[input_index],RetrieveChar(IndexAnswer(network)));
             back_propagation(network);
             updateweightsetbiases(network);
-            printf("%d",chars_count);
+            //printf("%d",chars_count);
       }
     }
     printf("\n");
@@ -225,6 +225,7 @@ void InitGUI(int argc, char *argv[])
     parent = main_window;
 	//Connect signals
 	gtk_builder_connect_signals(data.builder, &data);
+    g_signal_connect(main_window,"destroy",G_CALLBACK(gtk_main_quit),NULL);
 
     gtk_window_set_title(GTK_WINDOW(main_window), "Welcome to OCR-GANG");
     gtk_widget_show_all(main_window);

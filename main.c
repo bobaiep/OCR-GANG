@@ -185,9 +185,9 @@ void TNeuralNetwork(struct network *network){
     int step = 0;
     for (size_t i = 0; i < (size_t)nb; i++)
     {
+        step++;
         shuffle(trainingSetOrder,52);
         progressBar(step,nb);
-        step++;
         for (size_t index = 0; index < 52; index++)
         {
             size_t input_index = trainingSetOrder[index];
