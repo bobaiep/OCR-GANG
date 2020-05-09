@@ -45,18 +45,18 @@ struct network* InitializeNetwork(double i, double h, double o,char *filepath){
 void initialization(struct network *net){
     for (int i=0; i<net ->number_of_inputs; i++)
     {
-        //net ->output_layer_bias[i] = init_weight();
         for (int j=0; j<net ->number_of_hidden_nodes; j++)
         {
+            net ->hidden_layer_bias[j] = init_weight();
             net ->hidden_weights[i*net ->number_of_hidden_nodes+j] = init_weight();
         }
     }
-    for (int i = 0; i < net ->number_of_hidden_nodes; i++)
+    for (int k = 0; k < net ->number_of_hidden_nodes; k++)
     {
-        net ->hidden_layer_bias[i] = init_weight();
-        for (int j = 0; j < net ->number_of_outputs; j++)
+        for (int l = 0; l < net ->number_of_outputs; l++)
         {
-            net ->output_weights[i*net ->number_of_outputs+j] = init_weight();
+            net ->output_layer_bias[l] = init_weight();
+            net ->output_weights[k*net ->number_of_outputs+l] = init_weight();
         }
     }
 }
