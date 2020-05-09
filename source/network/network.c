@@ -45,6 +45,7 @@ struct network* InitializeNetwork(double i, double h, double o,char *filepath){
 void initialization(struct network *net){
     for (int i=0; i<net ->number_of_inputs; i++)
     {
+        //net ->output_layer_bias[i] = init_weight();
         for (int j=0; j<net ->number_of_hidden_nodes; j++)
         {
             net ->hidden_weights[i*net ->number_of_hidden_nodes+j] = init_weight();

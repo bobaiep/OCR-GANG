@@ -169,7 +169,7 @@ int TrainNeuralNetwork(){
     }
     printf("\n");
     printf("\e[?25h");
-    save_network("source/Xor/ocrwb.txt",network);
+    save_network("source/OCR/ocrwb.txt",network);
     free(network);
     return EXIT_SUCCESS;
 }
