@@ -4,7 +4,7 @@
 CC=gcc
 
 CPPFLAGS= `pkg-config --cflags sdl gtk+-3.0` -MMD
-CFLAGS= -Wall -Wextra -std=c99 -O3 -g
+CFLAGS= -Wall -Wextra -Werror -std=c99 -O3 -g
 LDFLAGS= -rdynamic
 LDLIBS= `pkg-config --libs sdl gtk+-3.0` -lSDL_image
 
@@ -19,7 +19,6 @@ create:
 	[ -d "source/OCR" ] || mkdir source/OCR
 	touch source/Xor/xordata.txt
 	touch source/Xor/xorwb.txt
-	touch source/OCR/ocrdata.txt
 	touch source/OCR/ocrwb.txt
 
 main: $(OBJ)

@@ -48,7 +48,7 @@ void load_image(GtkButton *button, GtkImage *image)
             best = max_h / hi;
         int new_w = wi * best;
         int new_h = hi * best;
-        printf("%d %d",new_w,new_h);
+        //printf("%d %d",new_w,new_h);
         SDL_Surface *new = resize(img,new_w,new_h);
         SDL_SaveBMP(new,"image_resize.bmp");
         gtk_image_set_from_file (GTK_IMAGE (image), "image_resize.bmp");
@@ -95,21 +95,30 @@ char * UpdatePath(char *filepath,size_t len,char c)
 {
     char *newpath = malloc(len*sizeof(char));
     for (size_t i = 0; i < len; i++) {
-        if (i != 13) {
+        if (i != 17) {
             newpath[i] = filepath[i];
         }
         else{
             newpath[i] = c;
         }
     }
-    newpath[19] = '\0';
+    if(c <= 'Z'){
+        newpath[14]='a';
+        newpath[15]='j';
+    }
+    else{
+        newpath[14]='i';
+        newpath[15]='n';
+    }
+    newpath[18] = (char) (rand()%4+48);
+    newpath[23] = '\0';
     return newpath;
 }
 
 int TrainNeuralNetwork(){
-    struct network *network = InitializeNetwork(30*30,20,52);
+    struct network *network = InitializeNetwork(30*30,20,52,"source/OCR/ocrwb.txt");
     init_sdl();
-    char *filepath = "img/training/A0.png";
+    char *filepath = "img/training/maj/A0.png";
     char expected_result[52] = {'A','a','B','b','C','c','D','d','E','e','F','f','G',\
     'g','H','h','I','i','J','j','K','k','L','I','M','m','N','n','O','o','P','p',\
     'Q','q','R','r','S','s','I','t','U','u','V','v','W','w','X','x','Y','y','Z','z'};
@@ -167,52 +176,49 @@ int TrainNeuralNetwork(){
 
 int OCR(GtkButton *button,GtkTextBuffer *buffer){
     UNUSED(button);
-    struct network *network = InitializeNetwork(30*30,20,52);
+    struct network *network = InitializeNetwork(30*30,20,52,"source/OCR/ocrwb.txt");
     init_sdl();
-    if(cfileexists((char*)filename)){
-        SDL_Surface* image = load__image((char*)filename);
-        //SDL_Surface* screen_surface = display_image(image);
-        //wait_for_keypressed();
-        image = black_and_white(image);
-        //screen_surface = display_image(image);
-        //wait_for_keypressed();
-        //SDL_SaveBMP(image,"binarisation.bmp");
-        DrawRedLines(image);
-        int BlocCount = CountBlocs(image);
-        SDL_Surface ***chars = malloc(sizeof(SDL_Surface**) * BlocCount);
-        SDL_Surface **blocs = malloc(sizeof(SDL_Surface*) * BlocCount);
-        int *charslen = DivideIntoBlocs(image,blocs,chars, BlocCount);
-        SDL_SaveBMP(image,"segmentation.bmp");
-        for (int j = 0; j < BlocCount; ++j) {
-            SDL_FreeSurface(blocs[j]);
-        }
-        //SDL_Surface* new_image=load_image("segmentation.bmp");
-        //screen_surface = display_image(new_image);
-        //wait_for_keypressed();
-        int **chars_matrix =  NULL;
-        int chars_count = ImageToMatrix(chars,&chars_matrix, charslen, BlocCount);
-        char *result = calloc(chars_count,sizeof(char));
-
-        for (size_t index = 0; index < (size_t)chars_count; index++) {
-            int is_espace = InputImage(network,index,&chars_matrix);
-            if (!is_espace) {
-              forward_pass(network);
-              size_t index_answer = IndexAnswer(network);
-              result[index] = RetrieveChar(index_answer);
-            }
-            else{
-              result[index] = ' ';
-            }
-        }
-        //SDL_FreeSurface(new_image);
-        //SDL_FreeSurface(screen_surface);
-        SDL_Quit();
-        text = result;
-        gtk_text_buffer_set_text (buffer,result,strlen(result));
-        free(network);
-        return EXIT_SUCCESS;
+    SDL_Surface* image = load__image((char*)filename);
+    //SDL_Surface* screen_surface = display_image(image);
+    //wait_for_keypressed();
+    image = black_and_white(image);
+    //screen_surface = display_image(image);
+    //wait_for_keypressed();
+    //SDL_SaveBMP(image,"binarisation.bmp");
+    DrawRedLines(image);
+    int BlocCount = CountBlocs(image);
+    SDL_Surface ***chars = malloc(sizeof(SDL_Surface**) * BlocCount);
+    SDL_Surface **blocs = malloc(sizeof(SDL_Surface*) * BlocCount);
+    int *charslen = DivideIntoBlocs(image,blocs,chars, BlocCount);
+    SDL_SaveBMP(image,"segmentation.bmp");
+    for (int j = 0; j < BlocCount; ++j) {
+        SDL_FreeSurface(blocs[j]);
     }
-    return 1;
+    //SDL_Surface* new_image=load_image("segmentation.bmp");
+    //screen_surface = display_image(new_image);
+    //wait_for_keypressed();
+    int **chars_matrix =  NULL;
+    int chars_count = ImageToMatrix(chars,&chars_matrix, charslen, BlocCount);
+    char *result = calloc(chars_count,sizeof(char));
+
+    for (size_t index = 0; index < (size_t)chars_count; index++) {
+        int is_espace = InputImage(network,index,&chars_matrix);
+        if (!is_espace) {
+          forward_pass(network);
+          size_t index_answer = IndexAnswer(network);
+          result[index] = RetrieveChar(index_answer);
+        }
+        else{
+          result[index] = ' ';
+        }
+    }
+    //SDL_FreeSurface(new_image);
+    //SDL_FreeSurface(screen_surface);
+    SDL_Quit();
+    text = result;
+    gtk_text_buffer_set_text (buffer,result,strlen(result));
+    free(network);
+    return EXIT_SUCCESS;
 }
 
 void InitGUI(int argc, char *argv[])

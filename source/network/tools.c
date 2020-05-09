@@ -86,18 +86,16 @@ void save_network(const char * filename,struct network *network)
     {
       for (int o = 0; o < network -> number_of_hidden_nodes; o++)
       {
-        fprintf(output,"%f %f %f %f %f\n",network->hidden_layer[o],network-> delta_hidden[o],\
-        network->hidden_layer_bias[o],network -> hidden_weights[k*network -> number_of_hidden_nodes+o],\
-        network->delta_hidden_weights[k*network -> number_of_hidden_nodes+o]);
+        fprintf(output,"%f %f\n",network->hidden_layer_bias[o],\
+        network -> hidden_weights[k*network -> number_of_hidden_nodes+o]);
       }
     }
     for (int i = 0; i < network -> number_of_hidden_nodes; i++)
     {
       for (int a = 0; a < network -> number_of_outputs; a++)
       {
-        fprintf(output,"%f %f %f %f %f\n",network->output_layer[a],network-> delta_output[a],\
-        network->output_layer_bias[a],network -> output_weights[i*network -> number_of_outputs+a],\
-        network->delta_output_weights[i*network -> number_of_outputs+a]);
+        fprintf(output,"%f %f\n",network->output_layer_bias[a],\
+        network -> output_weights[i*network -> number_of_outputs+a]);
       }
     }
     fclose(output);
@@ -109,18 +107,16 @@ void load_network(const char * filename,struct network *network){
     {
       for (int o = 0; o < network -> number_of_hidden_nodes; o++)
       {
-        fscanf(input,"%lf %lf %lf %lf %lf\n",&network->hidden_layer[o],&network-> delta_hidden[o],\
-        &network->hidden_layer_bias[o],&network -> hidden_weights[k*network -> number_of_hidden_nodes+o],\
-        &network->delta_hidden_weights[k*network -> number_of_hidden_nodes+o]);
+        fscanf(input,"%lf %lf\n",&network->hidden_layer_bias[o],\
+        &network -> hidden_weights[k*network -> number_of_hidden_nodes+o]);
       }
     }
     for (int i = 0; i < network -> number_of_hidden_nodes; i++)
     {
       for (int a = 0; a < network -> number_of_outputs; a++)
       {
-        fscanf(input,"%lf %lf %lf %lf %lf\n",&network->output_layer[a],&network-> delta_output[a],\
-        &network->output_layer_bias[a],&network -> output_weights[i*network -> number_of_outputs+a],\
-        &network->delta_output_weights[i*network -> number_of_outputs+a]);
+        fscanf(input,"%lf %lf\n",&network->output_layer_bias[a],\
+        &network -> output_weights[i*network -> number_of_outputs+a]);
       }
     }
     fclose(input);
@@ -219,15 +215,11 @@ size_t ExpectedPos(char c){
 }
 
 void ExpectedOutput(struct network *network,char c) {
-  size_t index  = ExpectedPos(c);
-  for (size_t i = 0; i < (size_t)network->number_of_outputs; i++) {
-    if ( i == index) {
-      network->goal[i] = 1;
-    }
-    else{
-      network->goal[i] = 0;
-    }
-  }
+    if(c >= 'A' && c <= 'Z')
+      network->goal[(int)(c) - 65] = 1;
+
+    else if(c >= 'a' && c <= 'z')
+      network->goal[((int)(c) - 97) + 26] = 1;
 
 }
 
@@ -235,42 +227,37 @@ char * updatepath(char *filepath,size_t len,char c)
 {
     char *newpath = malloc(len*sizeof(char));
     for (size_t i = 0; i < len; i++) {
-        if (i != 13) {
+        if (i != 17) {
             newpath[i] = filepath[i];
         }
         else{
             newpath[i] = c;
         }
     }
-    newpath[19] = '\0';
+    if(c <= 'Z'){
+        newpath[14]='a';
+        newpath[15]='j';
+    }
+    else{
+        newpath[14]='i';
+        newpath[15]='n';
+    }
+    newpath[18] = (char) (rand()%4+48);
+    newpath[23] = '\0';
     return newpath;
 }
 
-/*void PrintState(struct network *net, char expected, char obtained)
+void PrintState(char expected, char obtained)
 {
-  //Squared error function
-  SquaredError(net);
-  int output = RetrievePos(net);
 
-  //Retrive the chars : wanted & found
-  char goalChar = RetrieveChar(PosGoal(net -> Goal));
-  char recognizedChar = RetrieveChar(output);
+    printf("Char entered: %c | Char recoginized: %c ",
+                                                    expected,
+                                                    obtained);
+    if (expected == obtained) {
+        printf("=> %sOK%s\n",KGRN,KWHT);
+    }
+    else{
+        printf("=> %sKO%s\n",KRED,KWHT);
+    }
 
-  if(net -> ErrorRate > net -> MaxErrorRate)
-    net -> MaxErrorRate = net -> ErrorRate;
-
-  //Print the progress
-  if(output == PosGoal(net -> Goal))
-    printf("Position Found = %d Expected %d %sOK \n",
-                    output, PosGoal(net -> Goal),KGRN);
-  else
-    printf("Position Found = %d Expected %d %sKO \n",
-                    output, PosGoal(net -> Goal),KRED);
-
-  printf("%s",KWHT);
-
-  printf("Char entered: %c | Char recoginized: %c | ErrorRate: %f\n",
-                                                    goalChar,
-                                                    recognizedChar,
-                                                    net -> ErrorRate);
-}*/
+}

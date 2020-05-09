@@ -6,7 +6,7 @@
 #include <err.h>
 #include "tools.h"
 
-struct network* InitializeNetwork(double i, double h, double o){
+struct network* InitializeNetwork(double i, double h, double o,char *filepath){
   struct network *network = malloc(sizeof(struct network));
   if (network == NULL){
     errx(1, "Not enough memory!");
@@ -32,9 +32,9 @@ struct network* InitializeNetwork(double i, double h, double o){
   network->eta = 0.5f;
   network -> alpha = 0.9f;
 
-  if(!fileempty("source/Xor/xorwb.txt"))
+  if(!fileempty(filepath))
   {
-      load_network("source/Xor/xorwb.txt",network);
+      load_network(filepath,network);
   }
   else{
       initialization(network);

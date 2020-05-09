@@ -26,4 +26,6 @@ size_t ExpectedPos(char c);
 
 char * updatepath(char *filepath,size_t len,char c);
 
+void PrintState(char expected, char obtained);
+
 #endif

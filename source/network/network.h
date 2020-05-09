@@ -25,7 +25,7 @@ struct network {
   double *goal;
 };
 
-struct network* InitializeNetwork(double i, double h, double o);
+struct network* InitializeNetwork(double i, double h, double o,char *filepath);
 
 void initialization(struct network *net);
 

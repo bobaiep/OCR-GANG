@@ -69,7 +69,7 @@ void segmentation(char* filepath){
 
 void XOR(){
     /*Creation of neural network*/
-    struct network *network = InitializeNetwork(2,4,1);
+    struct network *network = InitializeNetwork(2,4,1,"source/XOR/xorwb.txt");
 
     static const int number_training_sets = 4;
     FILE *result_file;
@@ -126,53 +126,51 @@ void XOR(){
 
 void StartOCR(char* filepath,struct network *network){
     init_sdl();
-    if(cfileexists(filepath)){
-        SDL_Surface* image = load__image(filepath);
-        //SDL_Surface* screen_surface = display_image(image);
-        //wait_for_keypressed();
-        image = black_and_white(image);
-        //screen_surface = display_image(image);
-        //wait_for_keypressed();
-        //SDL_SaveBMP(image,"binarisation.bmp");
-        DrawRedLines(image);
-        int BlocCount = CountBlocs(image);
-        SDL_Surface ***chars = malloc(sizeof(SDL_Surface**) * BlocCount);
-        SDL_Surface **blocs = malloc(sizeof(SDL_Surface*) * BlocCount);
-        int *charslen = DivideIntoBlocs(image,blocs,chars, BlocCount);
-        SDL_SaveBMP(image,"segmentation.bmp");
-        for (int j = 0; j < BlocCount; ++j) {
-            SDL_FreeSurface(blocs[j]);
-        }
-        //SDL_Surface* new_image=load_image("segmentation.bmp");
-        //screen_surface = display_image(new_image);
-        //wait_for_keypressed();
-        int **chars_matrix =  NULL;
-        int chars_count = ImageToMatrix(chars,&chars_matrix, charslen, BlocCount);
-
-        char *result = calloc(chars_count,sizeof(char));
-
-        for (size_t index = 0; index < (size_t)chars_count; index++) {
-            int is_espace = InputImage(network,index,&chars_matrix);
-            if (!is_espace) {
-              forward_pass(network);
-              size_t index_answer = IndexAnswer(network);
-              result[index] = RetrieveChar(index_answer);
-            }
-            else{
-              result[index] = ' ';
-            }
-        }
-        //SDL_FreeSurface(new_image);
-        //SDL_FreeSurface(screen_surface);
-        SDL_Quit();
-        free(network);
-        printf("%s\n",result);
+    SDL_Surface* image = load__image(filepath);
+    //SDL_Surface* screen_surface = display_image(image);
+    //wait_for_keypressed();
+    image = black_and_white(image);
+    //screen_surface = display_image(image);
+    //wait_for_keypressed();
+    //SDL_SaveBMP(image,"binarisation.bmp");
+    DrawRedLines(image);
+    int BlocCount = CountBlocs(image);
+    SDL_Surface ***chars = malloc(sizeof(SDL_Surface**) * BlocCount);
+    SDL_Surface **blocs = malloc(sizeof(SDL_Surface*) * BlocCount);
+    int *charslen = DivideIntoBlocs(image,blocs,chars, BlocCount);
+    SDL_SaveBMP(image,"segmentation.bmp");
+    for (int j = 0; j < BlocCount; ++j) {
+        SDL_FreeSurface(blocs[j]);
     }
+    //SDL_Surface* new_image=load_image("segmentation.bmp");
+    //screen_surface = display_image(new_image);
+    //wait_for_keypressed();
+    int **chars_matrix =  NULL;
+    int chars_count = ImageToMatrix(chars,&chars_matrix, charslen, BlocCount);
+
+    char *result = calloc(chars_count,sizeof(char));
+
+    for (size_t index = 0; index < (size_t)chars_count; index++) {
+        int is_espace = InputImage(network,index,&chars_matrix);
+        if (!is_espace) {
+          forward_pass(network);
+          size_t index_answer = IndexAnswer(network);
+          result[index] = RetrieveChar(index_answer);
+        }
+        else{
+          result[index] = ' ';
+        }
+    }
+    //SDL_FreeSurface(new_image);
+    //SDL_FreeSurface(screen_surface);
+    SDL_Quit();
+    free(network);
+    printf("%s\n",result);
 }
 
 void TNeuralNetwork(struct network *network){
     init_sdl();
-    char *filepath = "img/training/A0.png\0";
+    char *filepath = "img/training/maj/A0.png\0";
     char expected_result[52] = {'A','a','B','b','C','c','D','d','E','e','F','f','G',\
     'g','H','h','I','i','J','j','K','k','L','I','M','m','N','n','O','o','P','p',\
     'Q','q','R','r','S','s','I','t','U','u','V','v','W','w','X','x','Y','y','Z','z'};
@@ -224,7 +222,7 @@ void TNeuralNetwork(struct network *network){
   }
   printf("\n");
   printf("\e[?25h");
-  save_network("source/Xor/ocrwb.txt",network);
+  save_network("source/OCR/ocrwb.txt",network);
 }
 
 int main(int argc, char** argv) {
@@ -247,14 +245,19 @@ int main(int argc, char** argv) {
         }
         else{
             if(strcmp(argv[1], "--OCR")==0 && argc==3){
-                struct network *network = InitializeNetwork(30*30,20,52);
-                TNeuralNetwork(network);
-                StartOCR(argv[2],network);
+                if(cfileexists(argv[2])){
+                    struct network *network = InitializeNetwork(30*30,20,52,"source/OCR/ocrwb.txt");
+                    TNeuralNetwork(network);
+                    StartOCR(argv[2],network);
+                }
+                else{
+                    printf("There is no such image, please specify a correct path.\n");
+                }
             }
 
             else{
                 if (strcmp(argv[1], "--train")==0) {
-                    struct network *network = InitializeNetwork(30*30,20,52);
+                    struct network *network = InitializeNetwork(30*30,20,52,"source/OCR/ocrwb.txt");
                     TNeuralNetwork(network);
                 }
                 else{
