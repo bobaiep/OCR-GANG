@@ -69,7 +69,7 @@ void segmentation(char* filepath){
 
 void XOR(){
     /*Creation of neural network*/
-    struct network *network = InitializeNetwork(2,4,1,"source/XOR/xorwb.txt");
+    struct network *network = InitializeNetwork(2,4,1,"source/Xor/xorwb.txt");
 
     static const int number_training_sets = 4;
     FILE *result_file;
