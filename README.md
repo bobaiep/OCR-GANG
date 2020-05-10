@@ -25,7 +25,7 @@ Arguments :
     --XOR   Montre la fonction XOR
 ```
 
-## Author
+## Authors
 
 👤 **Marius ANDRE ** 👤 **Pierre MEGALLI ** 👤 **Théo LE BEVER ** 👤 **Maxence DE TORQUAT DE LA COULERIE **
 
