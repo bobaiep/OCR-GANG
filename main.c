@@ -227,12 +227,6 @@ void TNeuralNetwork(struct network *network){
 
 int main(int argc, char** argv) {
     if (argc<2){
-        /*printf("-----------------------\n");
-        printf("Bienvenue dans OCR GANG\n");
-        printf("-----------------------\n");
-        printf("Arguments :\n");
-        printf("    --seg   Montre la segmentation (spécifiez un image path)\n");
-        printf("    --XOR   Montre la fonction XOR\n");*/
         InitGUI(argc,argv);
         return 0;
     }
@@ -265,7 +259,11 @@ int main(int argc, char** argv) {
                     printf("Bienvenue dans OCR GANG\n");
                     printf("-----------------------\n");
                     printf("Arguments :\n");
+                    printf("    (Aucun) Lance l'interface utilisateur (GUI)\n");
+                    printf("    --help  Montre ce message\n");
                     printf("    --seg   Montre la segmentation (spécifiez un image path)\n");
+                    printf("    --train Lance l'entrainement du réseau de neurones\n");
+                    printf("    --OCR   Lance l'OCR (spécifiez un image path)\n");
                     printf("    --XOR   Montre la fonction XOR\n");
                     return 0;
                 }
