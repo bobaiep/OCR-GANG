@@ -179,24 +179,19 @@ int OCR(GtkButton *button,GtkTextBuffer *buffer){
     struct network *network = InitializeNetwork(30*30,20,52,"source/OCR/ocrwb.txt");
     init_sdl();
     SDL_Surface* image = load__image((char*)filename);
-    //SDL_Surface* screen_surface = display_image(image);
-    //wait_for_keypressed();
     image = black_and_white(image);
-    //screen_surface = display_image(image);
-    //wait_for_keypressed();
-    //SDL_SaveBMP(image,"binarisation.bmp");
+    printf("Black and White and Binarization Done !");
     DrawRedLines(image);
     int BlocCount = CountBlocs(image);
     SDL_Surface ***chars = malloc(sizeof(SDL_Surface**) * BlocCount);
     SDL_Surface **blocs = malloc(sizeof(SDL_Surface*) * BlocCount);
     int *charslen = DivideIntoBlocs(image,blocs,chars, BlocCount);
     SDL_SaveBMP(image,"segmentation.bmp");
+    printf("Segmentation Done !");
     for (int j = 0; j < BlocCount; ++j) {
         SDL_FreeSurface(blocs[j]);
     }
-    //SDL_Surface* new_image=load_image("segmentation.bmp");
-    //screen_surface = display_image(new_image);
-    //wait_for_keypressed();
+
     int **chars_matrix =  NULL;
     int chars_count = ImageToMatrix(chars,&chars_matrix, charslen, BlocCount);
     char *result = calloc(chars_count,sizeof(char));
@@ -212,8 +207,6 @@ int OCR(GtkButton *button,GtkTextBuffer *buffer){
           result[index] = ' ';
         }
     }
-    //SDL_FreeSurface(new_image);
-    //SDL_FreeSurface(screen_surface);
     SDL_Quit();
     text = result;
     gtk_text_buffer_set_text (buffer,result,strlen(result));
