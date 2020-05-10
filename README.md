@@ -3,7 +3,11 @@
 
 > Create a OCR in C language for EPITA
 
-## Install
+## Prérequis
+* SDL_Image (libsdl-image1.2-dev)
+* GTK+ 3.0 (libgtk-3-dev)
+
+## Installation
 
 ```sh
 Démarrer une console dans le répertoire du projet puis lancer la commande make.
