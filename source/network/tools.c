@@ -2,6 +2,10 @@
 #include <stdlib.h>
 #include "network.h"
 
+#define KRED  "\x1B[31m"
+#define KWHT  "\x1B[37m"
+#define KGRN  "\x1B[32m"
+
 void progressBar(int step,int nb){
     printf("\e[?25l");
     int percent = (step*100)/nb;
@@ -82,18 +86,16 @@ void save_network(const char * filename,struct network *network)
     {
       for (int o = 0; o < network -> number_of_hidden_nodes; o++)
       {
-        fprintf(output,"%f %f %f %f %f\n",network->hidden_layer[o],network-> delta_hidden[o],\
-        network->hidden_layer_bias[o],network -> hidden_weights[k*network -> number_of_hidden_nodes+o],\
-        network->delta_hidden_weights[k*network -> number_of_hidden_nodes+o]);
+        fprintf(output,"%f %f\n",network->hidden_layer_bias[o],\
+        network -> hidden_weights[k*network -> number_of_hidden_nodes+o]);
       }
     }
     for (int i = 0; i < network -> number_of_hidden_nodes; i++)
     {
       for (int a = 0; a < network -> number_of_outputs; a++)
       {
-        fprintf(output,"%f %f %f %f %f\n",network->output_layer[a],network-> delta_output[a],\
-        network->output_layer_bias[a],network -> output_weights[i*network -> number_of_outputs+a],\
-        network->delta_output_weights[i*network -> number_of_outputs+a]);
+        fprintf(output,"%f %f\n",network->output_layer_bias[a],\
+        network -> output_weights[i*network -> number_of_outputs+a]);
       }
     }
     fclose(output);
@@ -105,18 +107,16 @@ void load_network(const char * filename,struct network *network){
     {
       for (int o = 0; o < network -> number_of_hidden_nodes; o++)
       {
-        fscanf(input,"%lf %lf %lf %lf %lf\n",&network->hidden_layer[o],&network-> delta_hidden[o],\
-        &network->hidden_layer_bias[o],&network -> hidden_weights[k*network -> number_of_hidden_nodes+o],\
-        &network->delta_hidden_weights[k*network -> number_of_hidden_nodes+o]);
+        fscanf(input,"%lf %lf\n",&network->hidden_layer_bias[o],\
+        &network -> hidden_weights[k*network -> number_of_hidden_nodes+o]);
       }
     }
     for (int i = 0; i < network -> number_of_hidden_nodes; i++)
     {
       for (int a = 0; a < network -> number_of_outputs; a++)
       {
-        fscanf(input,"%lf %lf %lf %lf %lf\n",&network->output_layer[a],&network-> delta_output[a],\
-        &network->output_layer_bias[a],&network -> output_weights[i*network -> number_of_outputs+a],\
-        &network->delta_output_weights[i*network -> number_of_outputs+a]);
+        fscanf(input,"%lf %lf\n",&network->output_layer_bias[a],\
+        &network -> output_weights[i*network -> number_of_outputs+a]);
       }
     }
     fclose(input);
@@ -134,4 +134,130 @@ void shuffle(int *array, size_t n)
             array[i] = t;
         }
     }
+}
+
+size_t IndexAnswer(struct network *net){
+    size_t index = 0;
+    for (size_t i = 1; i < (size_t)net->number_of_outputs; i++) {
+        if (net->output_layer[i]>net->output_layer[index]){
+            index = i;
+        }
+    }
+    return index;
+}
+char RetrieveChar(size_t val)
+{
+  char c;
+
+  if(val <= 25)
+  {
+    c = val + 65;
+  }
+  else if(val > 25 && val <= 51)
+  {
+    c = (val + 97 - 26);
+  }
+  else if(val > 51 && val <= 61)
+  {
+    c = val + 48 - 52;
+  }
+  else
+  {
+    switch(val)
+    {
+      case 62:
+        c = ';';
+        break;
+      case 63:
+        c = '\'';
+        break;
+      case 64:
+        c = ':';
+        break;
+      case 65:
+        c = '-';
+        break;
+      case 66:
+        c = '.';
+        break;
+      case 67:
+        c = '!';
+        break;
+      case 68:
+        c = '?';
+        break;
+      case 69:
+        c = '(';
+        break;
+      case 70:
+        c = '\"';
+        break;
+      case 71:
+        c = ')';
+        break;
+      default:
+        exit(1);
+        break;
+    }
+  }
+  return c;
+}
+
+size_t ExpectedPos(char c){
+  size_t index= (size_t)c;
+  if ( c >= 'A' && c <= 'Z') {
+    index -= 65;
+  }
+  if (c >= 'a' && c <= 'z') {
+    index -= 71;
+  }
+  return index;
+}
+
+void ExpectedOutput(struct network *network,char c) {
+    if(c >= 'A' && c <= 'Z')
+      network->goal[(int)(c) - 65] = 1;
+
+    else if(c >= 'a' && c <= 'z')
+      network->goal[((int)(c) - 97) + 26] = 1;
+
+}
+
+char * updatepath(char *filepath,size_t len,char c)
+{
+    char *newpath = malloc(len*sizeof(char));
+    for (size_t i = 0; i < len; i++) {
+        if (i != 17) {
+            newpath[i] = filepath[i];
+        }
+        else{
+            newpath[i] = c;
+        }
+    }
+    if(c <= 'Z'){
+        newpath[14]='a';
+        newpath[15]='j';
+    }
+    else{
+        newpath[14]='i';
+        newpath[15]='n';
+    }
+    newpath[18] = (char) (rand()%4+48);
+    newpath[23] = '\0';
+    return newpath;
+}
+
+void PrintState(char expected, char obtained)
+{
+
+    printf("Char entered: %c | Char recoginized: %c ",
+                                                    expected,
+                                                    obtained);
+    if (expected == obtained) {
+        printf("=> %sOK%s\n",KGRN,KWHT);
+    }
+    else{
+        printf("=> %sKO%s\n",KRED,KWHT);
+    }
+
 }

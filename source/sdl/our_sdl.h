@@ -6,7 +6,7 @@
 #include "SDL/SDL_image.h"
 
 void init_sdl(void);
-SDL_Surface* load_image(char *path);
+SDL_Surface* load__image(char *path);
 SDL_Surface* display_image(SDL_Surface *img);
 void wait_for_keypressed(void);
 Uint8 getRed(Uint32 pixel, SDL_PixelFormat *fmt);

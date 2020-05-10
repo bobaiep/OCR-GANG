@@ -3,7 +3,7 @@
 #include "err.h"
 #include <stdio.h>
 
-void DrawRedLines(SDL_Surface *image) { 
+void DrawRedLines(SDL_Surface *image) {
     Uint32 pixel;
     Uint8 red;
     char boo; //boo is boolean

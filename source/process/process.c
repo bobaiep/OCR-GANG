@@ -22,3 +22,13 @@ SDL_Surface* black_and_white(SDL_Surface* image)
     }
     return image;
 }
+
+SDL_Surface* resize(SDL_Surface* image,int new_w,int new_h)
+{
+    SDL_Surface *dest = SDL_CreateRGBSurface(SDL_HWSURFACE,
+                            new_w,
+                            new_h,
+                            image->format->BitsPerPixel,0,0,0,0);
+    SDL_SoftStretch(image, NULL, dest, NULL);
+    return dest;
+}

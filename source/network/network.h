@@ -19,13 +19,13 @@ struct network {
   double *output_layer_bias;
   double *output_weights;
   double *delta_output_weights;
-  
+
   double eta;
   double alpha;
   double *goal;
 };
 
-struct network* InitializeNetwork(double i, double h, double o);
+struct network* InitializeNetwork(double i, double h, double o,char *filepath);
 
 void initialization(struct network *net);
 
@@ -33,8 +33,8 @@ void forward_pass(struct network *net);
 
 void back_propagation(struct network *net);
 
-void updateweights(struct network *net);
+void updateweightsetbiases(struct network *net);
 
-void UpdateBiases(struct network *net);
+int InputImage(struct network *net,size_t index,int ***chars_matrix);
 
 #endif

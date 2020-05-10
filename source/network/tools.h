@@ -16,4 +16,16 @@ void load_network(const char * filename,struct network *network);
 
 void shuffle(int *array, size_t n);
 
+char RetrieveChar(size_t val);
+
+size_t IndexAnswer(struct network *net);
+
+void ExpectedOutput(struct network *network,char c);
+
+size_t ExpectedPos(char c);
+
+char * updatepath(char *filepath,size_t len,char c);
+
+void PrintState(char expected, char obtained);
+
 #endif
