@@ -81,7 +81,8 @@ void XOR(){
     printf("Finished all initialization !\n");
     char answer[1];
     printf("Do you want to train the neural network or use it ?\n1 = Train it\n2 = Use it\n");
-    fgets(answer,2,stdin);
+    if (fgets(answer,2,stdin) == NULL)
+        errx(1,"Error !");
     if (atoi(&answer[0])== 1)
     {
         printf("Started computing ... \n");
@@ -116,9 +117,9 @@ void XOR(){
     {
         printf("%sBUGGY RIGHT NOW !%s\n",KRED,KWHT);
         printf("Please input the first number :\n");
-        scanf("%lf\n",&network ->input_layer[0]);
+        (void)scanf("%lf\n",&network ->input_layer[0]);
         printf("Please input the second number :\n");
-        scanf("%lf\n",&network ->input_layer[1]);
+        (void)scanf("%lf\n",&network ->input_layer[1]);
         forward_pass(network);
         printf("The neural network returned : %f\n", network->output_layer[0]);
     }
