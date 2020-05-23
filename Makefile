@@ -24,6 +24,6 @@ create:
 main: $(OBJ)
 
 clean:
-	rm -rf *.bmp img/temp/*.bmp source/Xor source/OCR *.tst
+	rm -rf *.bmp img/temp/*.bmp source/Xor source/OCR *.tst img/training/maj/*.txt img/training/min/*.txt
 	$(RM) $(OBJ) $(OBJ_TESTS) $(DEP) $(DEP_TESTS) main && clear
 # END
