@@ -1,6 +1,11 @@
 #include <stdio.h>
-#include <stdlib.h>
-#include "network.h"
+#include "SDL/SDL.h"
+#include "SDL/SDL_image.h"
+#include "../sdl/our_sdl.h"
+#include "../segmentation/segmentation.h"
+#include "../process/process.h"
+#include "../network/network.h"
+#include "../network/tools.h"
 
 #define KRED  "\x1B[31m"
 #define KWHT  "\x1B[37m"
@@ -86,7 +91,7 @@ void save_network(const char * filename,struct network *network)
     {
       for (int o = 0; o < network -> number_of_hidden_nodes; o++)
       {
-        fprintf(output,"%f %f\n",network->hidden_layer_bias[o],\
+        fprintf(output,"%lf %lf\n",network->hidden_layer_bias[o],\
         network -> hidden_weights[k*network -> number_of_hidden_nodes+o]);
       }
     }
@@ -94,7 +99,7 @@ void save_network(const char * filename,struct network *network)
     {
       for (int a = 0; a < network -> number_of_outputs; a++)
       {
-        fprintf(output,"%f %f\n",network->output_layer_bias[a],\
+        fprintf(output,"%lf %lf\n",network->output_layer_bias[a],\
         network -> output_weights[i*network -> number_of_outputs+a]);
       }
     }
@@ -223,7 +228,7 @@ void ExpectedOutput(struct network *network,char c) {
 
 }
 
-char * updatepath(char *filepath,size_t len,char c)
+char * updatepath(char *filepath,size_t len,char c,size_t index)
 {
     char *newpath = malloc(len*sizeof(char));
     for (size_t i = 0; i < len; i++) {
@@ -242,7 +247,7 @@ char * updatepath(char *filepath,size_t len,char c)
         newpath[14]='i';
         newpath[15]='n';
     }
-    newpath[18] = (char) (rand()%4+48);
+    newpath[18] = (char) (index+48);
     newpath[23] = '\0';
     return newpath;
 }
@@ -260,4 +265,52 @@ void PrintState(char expected, char obtained)
         printf("=> %sKO%s\n",KRED,KWHT);
     }
 
+}
+
+void InputFromTXT(char *filepath, struct network *net){
+    FILE *file = fopen(filepath,"r");
+    size_t size = 28;
+    for (size_t i = 0; i < size; i++) {
+        for (size_t j = 0; j < size; j++) {
+            fscanf(file,"%lf",&net->input_layer[i*size+j]);
+        }
+        fscanf(file,"\n");
+    }
+    fclose(file);
+}
+
+void PrepareTraining(){
+    init_sdl();
+    char *filepath = "img/training/maj/A0.png\0";
+    char *filematrix = "img/training/maj/A0.txt\0";
+    char expected_result[52] = {'A','a','B','b','C','c','D','d','E','e','F','f','G',\
+    'g','H','h','I','i','J','j','K','k','L','I','M','m','N','n','O','o','P','p',\
+    'Q','q','R','r','S','s','I','t','U','u','V','v','W','w','X','x','Y','y','Z','z'};
+    int **chars_matrix =  NULL;
+
+
+    int nb = 52;
+    for (size_t i = 0; i < (size_t)nb; i++)
+    {
+        for (size_t index = 0; index < 4; index++) {
+            filepath = updatepath(filepath,(size_t)strlen(filepath),expected_result[i],index);
+            filematrix = updatepath(filematrix,(size_t)strlen(filepath),expected_result[i],index);
+
+            SDL_Surface* image = load__image(filepath);
+            image = black_and_white(image);
+            DrawRedLines(image);
+            int BlocCount = CountBlocs(image);
+            SDL_Surface ***chars = malloc(sizeof(SDL_Surface**) * BlocCount);
+            SDL_Surface **blocs = malloc(sizeof(SDL_Surface*) * BlocCount);
+            int *charslen = DivideIntoBlocs(image,blocs,chars, BlocCount);
+
+            for (int j = 0; j < BlocCount; ++j)
+            {
+                SDL_FreeSurface(blocs[j]);
+            }
+            ImageToMatrix(chars,&chars_matrix, charslen, BlocCount);
+            SaveMatrix(chars_matrix,filematrix);
+        }
+  }
+  free(chars_matrix);
 }

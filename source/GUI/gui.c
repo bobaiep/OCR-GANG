@@ -1,4 +1,6 @@
 #include "gui.h"
+#include "../network/tools.h"
+
 
 gchar *filename = "";
 char *text = "";
@@ -91,92 +93,44 @@ void open_image(GtkButton *button, GtkLabel *text_label)
 	gtk_widget_destroy(dialog);
 }
 
-char * UpdatePath(char *filepath,size_t len,char c)
-{
-    char *newpath = malloc(len*sizeof(char));
-    for (size_t i = 0; i < len; i++) {
-        if (i != 17) {
-            newpath[i] = filepath[i];
-        }
-        else{
-            newpath[i] = c;
-        }
-    }
-    if(c <= 'Z'){
-        newpath[14]='a';
-        newpath[15]='j';
-    }
-    else{
-        newpath[14]='i';
-        newpath[15]='n';
-    }
-    newpath[18] = (char) (rand()%4+48);
-    newpath[23] = '\0';
-    return newpath;
-}
 
 int TrainNeuralNetwork(){
-    struct network *network = InitializeNetwork(30*30,20,52,"source/OCR/ocrwb.txt");
-    init_sdl();
-    char *filepath = "img/training/maj/A0.png";
+    PrepareTraining();
+    struct network *network = InitializeNetwork(28*28,20,52,"source/OCR/ocrwb.txt");
+    char *filepath = "img/training/maj/A0.txt\0";
     char expected_result[52] = {'A','a','B','b','C','c','D','d','E','e','F','f','G',\
     'g','H','h','I','i','J','j','K','k','L','I','M','m','N','n','O','o','P','p',\
     'Q','q','R','r','S','s','I','t','U','u','V','v','W','w','X','x','Y','y','Z','z'};
-    int trainingSetOrder[52];
-    for (size_t i = 0; i < 52; i++)
-    {
-        trainingSetOrder[i] = i;
-    }
     int nb = 5000;
     int step = 0;
-    for (size_t i = 0; i < (size_t)nb; i++)
+    for (size_t number = 0; number < (size_t)nb; number++)
     {
-        step++;
-        shuffle(trainingSetOrder,52);
-        progressBar(step,nb);
-        for (size_t index = 0; index < 52; index++)
+        for (size_t i = 0; i < 52; i++)
         {
-            size_t input_index = trainingSetOrder[index];
-            filepath = UpdatePath(filepath,(size_t)strlen(filepath),expected_result[input_index]);
-
-            SDL_Surface* image = load__image(filepath);
-
-            image = black_and_white(image);
-
-            DrawRedLines(image);
-
-            int BlocCount = CountBlocs(image);
-            SDL_Surface ***chars = malloc(sizeof(SDL_Surface**) * BlocCount);
-            SDL_Surface **blocs = malloc(sizeof(SDL_Surface*) * BlocCount);
-            int *charslen = DivideIntoBlocs(image,blocs,chars, BlocCount);
-
-            for (int j = 0; j < BlocCount; ++j) {
-                SDL_FreeSurface(blocs[j]);
+            for (size_t index = 0; index < 4; index++)
+            {
+                step++;
+                progressBar(step,nb*52*4);
+                filepath = updatepath(filepath,(size_t)strlen(filepath),expected_result[i],index);
+                ExpectedOutput(network,expected_result[i]);
+                InputFromTXT(filepath,network);
+                forward_pass(network);
+                //PrintState(expected_result[i],RetrieveChar(IndexAnswer(network)));
+                back_propagation(network);
+                updateweightsetbiases(network);
             }
-
-            int **chars_matrix =  NULL;
-            int chars_count = ImageToMatrix(chars,&chars_matrix, charslen, BlocCount);
-
-            ExpectedOutput(network,expected_result[input_index]);
-            InputImage(network,0,&chars_matrix);
-            forward_pass(network);
-            //PrintState(network,expected_result[input_index],RetrieveChar(IndexAnswer(network)));
-            UNUSED(chars_count);
-            back_propagation(network);
-            updateweightsetbiases(network);
-            //printf("%d",chars_count);
-      }
-    }
-    printf("\n");
-    printf("\e[?25h");
-    save_network("source/OCR/ocrwb.txt",network);
-    free(network);
-    return EXIT_SUCCESS;
+        }
+  }
+  printf("\n");
+  printf("\e[?25h");
+  save_network("source/OCR/ocrwb.txt",network);
+  free(network);
+  return EXIT_SUCCESS;
 }
 
 int OCR(GtkButton *button,GtkTextBuffer *buffer){
     UNUSED(button);
-    struct network *network = InitializeNetwork(30*30,20,52,"source/OCR/ocrwb.txt");
+    struct network *network = InitializeNetwork(28*28,20,52,"source/OCR/ocrwb.txt");
     init_sdl();
     SDL_Surface* image = load__image((char*)filename);
     image = black_and_white(image);

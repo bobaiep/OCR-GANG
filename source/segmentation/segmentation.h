@@ -12,4 +12,5 @@ void DrawLinesUp(SDL_Surface *image);
 int CountChars(SDL_Surface *image);
 int *Resize1(int *mat, int sizeFinalX, int sizeFinalY, int sizeX, int sizeY);
 int ImageToMatrix(SDL_Surface ***chars, int ***chars_matrix, int *len, int BlocNumber);
+void SaveMatrix(int **chars_matrix,char *filename);
 #endif

@@ -264,10 +264,22 @@ int ImageToMatrix(SDL_Surface ***chars, int ***chars_matrix, int *len, int BlocN
                     (*chars_matrix)[count][y * chars[j][i]->w + x + 1] = r == 255 ? 0 : 1;
 				}
 			}
-            int *char_resized = Resize1((*chars_matrix)[count], 30, 30, chars[j][i]->w, chars[j][i]->h);
+            int *char_resized = Resize1((*chars_matrix)[count], 28, 28, chars[j][i]->w, chars[j][i]->h);
 			(*chars_matrix)[count] = char_resized;
             count++;
 		}
 	}
 	return count;
+}
+
+void SaveMatrix(int **chars_matrix,char *filename){
+    FILE *matrix = fopen(filename,"w");
+    size_t size = 28;
+    for (size_t i = 0; i < size; i++) {
+        for (size_t j = 0; j < size; j++) {
+            fprintf(matrix,"%lf",(double)chars_matrix[0][i*size+j]);
+        }
+        fprintf(matrix,"\n");
+    }
+    fclose(matrix);
 }

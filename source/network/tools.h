@@ -24,8 +24,12 @@ void ExpectedOutput(struct network *network,char c);
 
 size_t ExpectedPos(char c);
 
-char * updatepath(char *filepath,size_t len,char c);
+char * updatepath(char *filepath,size_t len,char c,size_t index);
 
 void PrintState(char expected, char obtained);
+
+void InputFromTXT(char *filepath, struct network *net);
+
+void PrepareTraining();
 
 #endif
