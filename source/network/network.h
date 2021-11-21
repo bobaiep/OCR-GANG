@@ -1,31 +1,32 @@
 #ifndef NN_H_
 #define NN_H_
 
+#include <stddef.h>
+struct network
+{
+    int number_of_inputs;
+    int number_of_hidden_nodes;
+    int number_of_outputs;
+    double *input_layer;
 
-struct network {
-  int number_of_inputs;
-  int number_of_hidden_nodes ;
-  int number_of_outputs ;
-  double *input_layer;
+    double *hidden_layer;
+    double *delta_hidden;
+    double *hidden_layer_bias;
+    double *hidden_weights;
+    double *delta_hidden_weights;
 
-  double *hidden_layer;
-  double *delta_hidden;
-  double *hidden_layer_bias;
-  double *hidden_weights;
-  double *delta_hidden_weights;
+    double *output_layer;
+    double *delta_output;
+    double *output_layer_bias;
+    double *output_weights;
+    double *delta_output_weights;
 
-  double *output_layer;
-  double *delta_output;
-  double *output_layer_bias;
-  double *output_weights;
-  double *delta_output_weights;
-
-  double eta;
-  double alpha;
-  double *goal;
+    double eta;
+    double alpha;
+    double *goal;
 };
 
-struct network* InitializeNetwork(double i, double h, double o,char *filepath);
+struct network *InitializeNetwork(double i, double h, double o, char *filepath);
 
 void initialization(struct network *net);
 
@@ -35,6 +36,6 @@ void back_propagation(struct network *net);
 
 void updateweightsetbiases(struct network *net);
 
-int InputImage(struct network *net,size_t index,int ***chars_matrix);
+int InputImage(struct network *net, size_t index, int ***chars_matrix);
 
 #endif
