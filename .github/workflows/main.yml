@@ -1,0 +1,15 @@
+name: CI
+
+on: push
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Compilation test
+        run: |
+          docker pull archlinux:latest
+          docker run -t -v $PWD:/src -w /src archlinux:latest bash -c "pacman -Syyu make gcc gtk3 sdl_image pkg-config --noconfirm && make"
